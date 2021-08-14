@@ -1,81 +1,117 @@
 @extends('layouts.default')
 
 @section('content')
+
+    <style>
+        .card {
+            width: 100%;
+        }
+    </style>
     <div class="row">
         <div class="col-xl-12">
             <div class="breadcrumb-holder">
-                <h1 class="main-title float-left">กราฟแสดงข้อมูลบุคลากรสายวิชาการตามคุณวุฒิ</h1>
+                <h1 class="main-title float-left">รายชื่อบุคลากรตามหน่วยงาน</h1>
                 <ol class="breadcrumb float-right">
                     <li class="breadcrumb-item">Home</li>
-                    <li class="breadcrumb-item active">กราฟแสดงข้อมูลบุคลากรสายวิชาการตามคุณวุฒิ</li>
+                    <li class="breadcrumb-item active">รายชื่อบุคลากรตามหน่วยงาน</li>
                 </ol>
                 <div class="clearfix"></div>
             </div>
         </div>
     </div>
 
+
+
     <div class="row">
-        <div class="col-xl-12">
-            <div class="row">
 
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fa fa-line-chart"></i> รายชื่อบุคลากรตามหน่วยงาน</h3>
+            </div>
 
-{{--                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">--}}
-{{--                    <div class="card mb-3">--}}
-{{--                        <div class="card-header">--}}
-{{--                            <h3><i class="fa fa-line-chart"></i> กราฟแสดงข้อมูลบุคลากรสายวิชาการตามคุณวุฒิ</h3>--}}
-{{--                        </div>--}}
+            <div class="card-body">
+                <form action="{{route('index5')}}" method="get">
 
-{{--                        <div class="card-body">--}}
-{{--                            <canvas id="comboBarLineChart2"></canvas>--}}
-{{--                        </div>--}}
-{{--                        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>--}}
-{{--                    </div><!-- end card-->--}}
-{{--                </div>--}}
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <p>หน่วยงาน</p>
+                            </div>
 
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <h3><i class="fa fa-line-chart"></i> กราฟแสดงข้อมูลบุคลากรสายวิชาการตามคุณวุฒิ</h3>
+                            <div class="form-group">
+                                <select name="agency_id" id="agency_id" class="form-control">
+                                    <option value="">ทั้งหมด</option>
+                                @foreach($agencies as $i => $agency)
+                                        <option value="{{$agency->id}}">{{$agency->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
+                        <div class="col-md-9" style="margin-top: -17px;">
+                            <div class="form-group">
+                                <button
+                                    type="submit" class="btn btn-primary" style="float: right">ค้นหา
+                                </button>
+                            </div>
 
-                        <div class="card-body">
-                            <canvas id="comboLineChart2"></canvas>
+                            <div class="form-group">
+                                <p>Search</p>
+                                <input type="text" class="form-control" name="search" placeholder="คียเวิร์ด">
+                            </div>
                         </div>
-                        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
-                    </div><!-- end card-->
+                    </div>
+                </form>
+
+                <div class="col-lg-12 col-md-12 col-xl-12" style="overflow: auto">
+                    <div class="form-group">
+                        <table class="table table-striped" style="overflow: auto">
+                            <thead style="overflow: auto">
+                            <tr style="overflow: auto">
+                                <th>ลำดับ</th>
+                                <th>ชื่อ-สกุล</th>
+                                <th>ตำแหน่ง</th>
+                                <th>หน่วยงาน</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            @if($users && count($users) >0)
+                                {{--                            @endforeach--}}
+                                @foreach($users as $i=> $user)
+                                    @if(isset($user['id'] ))
+                                        <tr>
+                                            <td>{{$user['no']}}</td>
+                                            <td>
+                                                <a href="{{route('view',['id' => $user['id'] ] )}}">
+                                                    {{$user['fullname']}}
+                                                </a>
+                                            </td>
+                                            <td>{{$user['position']}}</td>
+                                            <td>{{$user['agency']}}</td>
+                                        </tr>
+                                    @else
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td>{{$user['position']}}</td>
+                                            <td></td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+
+                            @else
+                                <tr>
+                                    <td class="text-center" colspan="4">No data Record</td>
+                                </tr>
+                            @endif
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-
-
-                {{--                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-3">--}}
-                {{--                    <div class="card mb-3">--}}
-                {{--                        <div class="card-header">--}}
-                {{--                            <h3><i class="fa fa-bar-chart-o"></i> Colour Analytics</h3>--}}
-                {{--                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non luctus metus. Vivamus fermentum ultricies orci sit amet sollicitudin.--}}
-                {{--                        </div>--}}
-
-                {{--                        <div class="card-body">--}}
-                {{--                            <canvas id="pieChart"></canvas>--}}
-                {{--                        </div>--}}
-                {{--                        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>--}}
-                {{--                    </div><!-- end card-->--}}
-                {{--                </div>--}}
-
-                {{--                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-3">--}}
-                {{--                    <div class="card mb-3">--}}
-                {{--                        <div class="card-header">--}}
-                {{--                            <h3><i class="fa fa-bar-chart-o"></i> Colour Analytics 2</h3>--}}
-                {{--                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non luctus metus. Vivamus fermentum ultricies orci sit amet sollicitudin.--}}
-                {{--                        </div>--}}
-
-                {{--                        <div class="card-body">--}}
-                {{--                            <canvas id="doughnutChart"></canvas>--}}
-                {{--                        </div>--}}
-                {{--                        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>--}}
-                {{--                    </div><!-- end card-->--}}
-                {{--                </div>--}}
-
             </div>
         </div>
+
+
     </div>
     {{--    <div class="row">--}}
     {{--        <div class="col-xl-12">--}}
@@ -526,160 +562,4 @@
     {{--        </div>--}}
     {{--    </div>--}}
 
-@endsection
-
-
-@section('script')
-    <script>
-        // var ctx1 = document.getElementById("comboBarLineChart2").getContext('2d');
-        // var comboBarLineChart1 = new Chart(ctx1, {
-        //     type: 'bar',
-        //     data: {
-        //         labels: ["2560", "2561", "2562", "2563", "2564"],
-        //         datasets: [
-        //             // {
-        //             // type: 'line',
-        //             // label: 'Dataset 1',
-        //             // borderColor: '#484c4f',
-        //             // borderWidth: 3,
-        //             // fill: false,
-        //             // data: [12, 19, 3, 5, 2, 3, 13, 17, 11, 8, 11, 9],
-        //             // },
-        //             {
-        //                 type: 'bar',
-        //                 label: 'ป.เอก',
-        //                 backgroundColor: '#FF6B8A',
-        //                 data: [10, 11, 7, 5, 3],
-        //                 borderColor: 'white',
-        //                 borderWidth: 0
-        //             }, {
-        //                 type: 'bar',
-        //                 label: 'ป.โท',
-        //                 backgroundColor: '#059BFF',
-        //                 data: [10, 11, 7, 5, 1],
-        //             }, {
-        //                 type: 'bar',
-        //                 label: 'ผศ.ดร.',
-        //                 backgroundColor: '#484c4f',
-        //                 data: [10, 11, 7, 5, 4],
-        //             }, {
-        //                 type: 'bar',
-        //                 label: 'รศ.ดร.',
-        //                 backgroundColor: '#EBEFF3',
-        //                 data: [10, 11, 7, 5, 9],
-        //             }
-        //         ],
-        //         borderWidth: 1
-        //     },
-        //     options: {
-        //         scales: {
-        //             yAxes: [{
-        //                 ticks: {
-        //                     beginAtZero: true
-        //                 }
-        //             }]
-        //         }
-        //     }
-        // });
-
-        var ctx2 = document.getElementById("comboLineChart2").getContext('2d');
-        var comboBarLineChart2 = new Chart(ctx2, {
-            type: 'bar',
-            data: {
-                labels: ["2560", "2561", "2562", "2563", "2564"],
-                datasets: [
-                    {
-                        type: 'line',
-                        label: 'ป.เอก',
-                        borderColor: '#059BFF',
-                        borderWidth: 3,
-                        fill: false,
-                        data: [17, 11, 8, 11, 9],
-                    },
-                    {
-                        type: 'line',
-                        label: 'ป.โท',
-                        borderColor: '#0000FF',
-                        borderWidth: 3,
-                        fill: false,
-                        data: [12, 8, 3, 2, 7],
-                    },
-                    {
-                        type: 'line',
-                        label: 'ผศ.ดร.',
-                        borderColor: '#484c4f',
-                        borderWidth: 3,
-                        fill: false,
-                        data: [12, 19, 3, 5, 2],
-                    },
-                    {
-                        type: 'line',
-                        label: 'รศ.ดร.',
-                        borderColor: '#00FF00',
-                        borderWidth: 3,
-                        fill: false,
-                        data: [19, 3, 12, 5, 2],
-                    },
-                    {
-                        type: 'bar',
-                        label: '',
-                        borderColor: '#FFFFFFFF',
-                        borderWidth: 3,
-                        fill: false,
-                        data: [0,0,0,0,0],
-                    },
-                ],
-                borderWidth: 1
-            },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero:true
-                        }
-                    }]
-                }
-            }
-        });
-
-        // comboBarLineChart
-        var ctx2 = document.getElementById("comboBarLineChart").getContext('2d');
-        var comboBarLineChart = new Chart(ctx2, {
-            type: 'bar',
-            data: {
-                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                datasets: [{
-                    type: 'line',
-                    label: 'Dataset 1',
-                    borderColor: '#484c4f',
-                    borderWidth: 3,
-                    fill: false,
-                    data: [12, 19, 3, 5, 2, 3, 13, 17, 11, 8, 11, 9],
-                }, {
-                    type: 'bar',
-                    label: 'Dataset 2',
-                    backgroundColor: '#FF6B8A',
-                    data: [10, 11, 7, 5, 9, 13, 10, 16, 7, 8, 12, 5],
-                    borderColor: 'white',
-                    borderWidth: 0
-                }, {
-                    type: 'bar',
-                    label: 'Dataset 3',
-                    backgroundColor: '#059BFF',
-                    data: [10, 11, 7, 5, 9, 13, 10, 16, 7, 8, 12, 5],
-                }],
-                borderWidth: 1
-            },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero:true
-                        }
-                    }]
-                }
-            }
-        });
-
-    </script>
 @endsection

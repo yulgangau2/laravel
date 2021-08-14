@@ -7,29 +7,38 @@
             <ul>
 
                 <li class="submenu">
+                    <a class="{{
+                        \Illuminate\Support\Facades\Route::currentRouteName() == 'index5'  ||
+                        \Illuminate\Support\Facades\Route::currentRouteName() == 'view'
+                    ? 'active' : '' }}"
+                       href="{{route('index5')}}"><i class="fa fa-fw fa-bars"></i>
+                        <span>ข้อมูลพนักงาน</span>
+                    </a>
+                </li>
+                <li class="submenu">
                     <a class="{{ \Illuminate\Support\Facades\Route::currentRouteName() == 'index' ? 'active' : '' }}"
 
                        href="{{route('index')}}"><i class="fa fa-fw fa-bars"></i>
-                        <span> บุคลากรใกล้ถูกเลิกจ้าง </span>
+                        <span>บุคลากรใกล้ถูกเลิกจ้าง</span>
                     </a>
                 </li>
 
                 <li class="submenu">
-                    <a class="{{ \Illuminate\Support\Facades\Route::currentRouteName() == 'index2' ? 'active' : '' }}"
-                       href="{{route('index2')}}"><i class="fa fa-fw fa-bars"></i>
-                        <span> ข้อมูลบุคลากร </span>
-                    </a>
-                </li>
-                <li class="submenu">
                     <a class="{{ \Illuminate\Support\Facades\Route::currentRouteName() == 'index3' ? 'active' : '' }}"
                        href="{{route('index3')}}"><i class="fa fa-fw fa-bars"></i>
-                        <span> ข้อมูลพนักงานประจำ/ชั่วคราว </span>
+                        <span>ข้อมูลพนักงานประจำ/ชั่วคราว</span>
                     </a>
                 </li>
                 <li class="submenu">
                     <a class="{{ \Illuminate\Support\Facades\Route::currentRouteName() == 'index4' ? 'active' : '' }}"
                        href="{{route('index4')}}"><i class="fa fa-fw fa-bars"></i>
-                        <span> คุณวุฒิบุคลากรสายวิชาการ</span>
+                        <span>คุณวุฒิบุคลากรสายวิชาการ</span>
+                    </a>
+                </li>
+                <li class="submenu">
+                    <a class="{{ \Illuminate\Support\Facades\Route::currentRouteName() == 'setting' ? 'active' : '' }}"
+                       href="{{route('setting')}}"><i class="fa fa-fw fa-bars"></i>
+                        <span>ตั้งค่า</span>
                     </a>
                 </li>
 {{--                <li class="submenu">--}}
@@ -38,7 +47,7 @@
 
                 <li class="submenu">
                     <a href="charts.html"><i class="fa fa-fw fa-area-chart"></i>
-                        <span> ออกจากระบบ </span>
+                        <span>ออกจากระบบ</span>
                     </a>
                 </li>
 

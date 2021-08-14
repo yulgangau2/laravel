@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Pike Admin - Free Bootstrap 4 Admin Template</title>
+    <title>{{env('APP_NAME')}}</title>
     <meta name="description" content="Free Bootstrap 4 Admin Theme | Pike Admin">
     <meta name="author" content="Pike Web Development - https://www.pikephp.com">
 
@@ -24,6 +24,7 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css"/>
     <!-- END CSS for this page -->
 
+    @yield('style')
 </head>
 
 <body class="adminbody">
