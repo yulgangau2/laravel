@@ -21,37 +21,168 @@ Route::get('/', function () {
 Route::group(['prefix' => 'admin'], function () {
     Route::get('', [\App\Http\Controllers\ReportController::class, 'index'])->name('index');
     Route::get('index2', [\App\Http\Controllers\ReportController::class, 'index2'])->name('index2');
+//    Route::get('index2', [\App\Http\Controllers\ReportController::class, 'index2'])->name('index2');
     Route::get('index3', [\App\Http\Controllers\ReportController::class, 'index3'])->name('index3');
     Route::get('index4', [\App\Http\Controllers\ReportController::class, 'index4'])->name('index4');
+
+    Route::get('index5', [\App\Http\Controllers\ReportController::class, 'index5'])->name('index5');
+    Route::get('view/{id}', [\App\Http\Controllers\ReportController::class, 'view'])->name('view');
+
+    Route::get('setting', [\App\Http\Controllers\ReportController::class, 'setting'])->name('setting');
+});
+
+
+Route::group(['prefix'=> 'update'],function(){
+    // Get All Employee
+    Route::post('update_employee', [\App\Http\Controllers\UpdateController::class, 'update_employee'])->name('update_employee');
+
+    //update Personal Info
+    Route::post('update_personal_info', [\App\Http\Controllers\UpdateController::class, 'update_personal_info'])->name('update_personal_info');
+
+    //update history worker
+    Route::post('update_history_worker', [\App\Http\Controllers\UpdateController::class, 'update_history_worker'])->name('update_history_worker');
+
+    //update workcurrentinfo //check
+    Route::post('update_work_current_info', [\App\Http\Controllers\UpdateController::class, 'update_work_current_info'])->name('update_work_current_info');
+
+
+    //update education
+    Route::post('update_employee_education', [\App\Http\Controllers\UpdateController::class, 'update_employee_education'])->name('update_employee_education');
+
+    //update executive
+    Route::post('update_employee_executive', [\App\Http\Controllers\UpdateController::class, 'update_employee_executive'])->name('update_employee_executive');
+
+
+
+    //update leavehistory
+    Route::post('update_employee_leavehistory', [\App\Http\Controllers\UpdateController::class, 'update_employee_leavehistory'])->name('update_employee_leavehistory');
+
+    //update leaveeducation
+    Route::post('update_employee_leaveeducation', [\App\Http\Controllers\UpdateController::class, 'update_employee_leaveeducation'])->name('update_employee_leaveeducation');
+
+
+    //update leaveeducation
+    Route::post('update_employee_fame', [\App\Http\Controllers\UpdateController::class, 'update_employee_fame'])->name('update_employee_fame');
+
+    //update leaveeducation
+    Route::post('update_employee_address', [\App\Http\Controllers\UpdateController::class, 'update_employee_address'])->name('update_employee_address');
 
 });
 
 
-Route::get('aaa', function () {
-    dd(\Illuminate\Support\Facades\Hash::make(1234));
+Route::get('seed',function (){
+//    $token = 'c6hhTuNzDR4vSCVwqC1Z1mqvKaCrMBUr';
 
-    $string = date_create("2564-06-15");
-//    $string = $this->request->getData('delivery_date');
-    $y = (int)date_format($string, "Y");
-    $m = (int)date_format($string, "m");
-    $d = (int)date_format($string, "d");
-    $Y = date('Y');
-    if ($Y+543 == $y){
-        $y = $Y;
-        $string = $y.'-'.$m.'-'.$d;
+//    $curl = curl_init();
+//
+//    curl_setopt_array($curl, array(
+//        CURLOPT_URL => "https://mis-api.cmu.ac.th/hr/v2.2/employees/personalinfo",
+//        CURLOPT_RETURNTRANSFER => true,
+//        CURLOPT_ENCODING => "",
+//        CURLOPT_MAXREDIRS => 10,
+//        CURLOPT_TIMEOUT => 0,
+//        CURLOPT_FOLLOWLOCATION => true,
+//        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+//        CURLOPT_CUSTOMREQUEST => "GET",
+//        CURLOPT_HTTPHEADER => array(
+//            "orgid: 0000000021",
+//            "personalid: "."3509901220807",
+//            "Authorization: Bearer $token"
+//        ),
+//    ));
+//
+//    $response = curl_exec($curl);
+//
+//    curl_close($curl);
+//
+//    $json = json_decode($response,true);
+//    dd($json);
+//    die();
+    $open = fopen("emp.csv", "r");
+    $row = fgetcsv($open, 1000, ",");
+    $data =[];
+    while (($row = fgetcsv($open, 1000, ",")) !== FALSE)
+    {
+
+        $tmp = [
+            "PersonalID" => $row[0],
+            'emailCMU' => $row[1],
+            'created_at' => \Carbon\Carbon::now(),
+            'updated_at' => \Carbon\Carbon::now()
+        ];
+        $data[] = $tmp;
+        // Read the data
     }
-    $x = date('Y-m-d', strtotime($string));
-    dd($x);
+
+    fclose($open);
 
 
-    $xx = $date->format('Y');
-    $date = DateTime::createFromFormat('Y', '2009-02-15');
-
-
-
+    dd($data);
+    \Illuminate\Support\Facades\DB::table('employees')->insert($data);
 
 
 
-    dd($xx);
+});
+
+Route::get('seed2',function (){
+
+    $open = fopen("example.csv", "r");
+    $row = fgetcsv($open, 1000, ",");
+    $data =[];
+
+    while (($row = fgetcsv($open, 1000, ",")) !== FALSE)
+    {
+
+
+        if ($row[0] == "" || $row[1] == ""){
+            continue;
+        }
+
+        $name = explode("\n",$row[1]);
+
+
+        $start_red_at = null;
+        $end_red_at = null;
+        $danger_colspan = null;
+
+        if ($row[3] == 'อาจารย์'){
+//            $start_red_at = \Carbon\Carbon::createFromFormat('d/m/y',$row[12])->addYears(543)->addDay()->format('d/m/Y');
+            $end_red_at =  \Carbon\Carbon::createFromFormat('d/m/y',$row[12])->addYears(543)->addYears(2)->format('d/m/Y');
+            $danger_colspan = 2;
+        }
+
+//        dd( $row,\Carbon\Carbon::createFromFormat('d/m/y',$row[7])->format('d/m/Y'));
+        $tmp = [
+            'firstname' => $name[0],
+            'lastname' => $name[1],
+            'no' => $row[2],
+            'position' => $row[3],
+            'first_day' => \Carbon\Carbon::createFromFormat('d/m/y',$row[5])->addYears(543)->format('d/m/Y'),
+            'start_green_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[6])->addYears(543)->format('d/m/Y'),
+            'end_green_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[9])->addYears(543)->format('d/m/Y'),
+            'safe_colspan' => $row[8],
+            'start_yellow_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[11])->addYears(543)->format('d/m/Y'),
+            'end_yellow_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[12])->addYears(543)->format('d/m/Y'),
+            'warning_colspan' => $row[10],
+
+            'start_red_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[13])->addYears(543)->format('d/m/Y'),
+            'end_red_at' =>  \Carbon\Carbon::createFromFormat('d/m/y',$row[12])->addYears(543)->addYears(2)->format('d/m/Y'),
+            'danger_colspan' => $danger_colspan,
+
+
+//            'test8' => $row[15],
+//            'leave_education' => $row[16],
+
+        ];
+//        dd($row)
+        $data[] = $tmp;
+
+        // Read the data
+    }
+
+    fclose($open);
+    \Illuminate\Support\Facades\DB::table('lay_offs')->insert($data);
+
+
 
 });

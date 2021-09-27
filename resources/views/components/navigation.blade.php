@@ -2,7 +2,10 @@
 
     <!-- LOGO -->
     <div class="headerbar-left">
-        <a href="{{route('index')}}" class="logo"><img alt="Logo" src="{{asset('assets/images/logo.png')}}" /> <span>CAMT</span></a>
+        <a href="{{route('index')}}" class="logo">
+            <img alt="Logo" src="https://sap.camtsmartoffice.com/v1r//img/camt_b.png?v2" />
+            <span style="color:#493A33;font-size:16px;">CAMT</span>
+        </a>
     </div>
 
     <nav class="navbar-custom">
@@ -171,13 +174,13 @@
 
 {{--        </ul>--}}
 
-{{--        <ul class="list-inline menu-left mb-0">--}}
-{{--            <li class="float-left">--}}
-{{--                <button class="button-menu-mobile open-left">--}}
-{{--                    <i class="fa fa-fw fa-bars"></i>--}}
-{{--                </button>--}}
-{{--            </li>--}}
-{{--        </ul>--}}
+        <ul class="list-inline menu-left mb-0">
+            <li class="float-left">
+                <button class="button-menu-mobile open-left">
+                    <i class="fa fa-fw fa-bars"></i>
+                </button>
+            </li>
+        </ul>
 
     </nav>
 

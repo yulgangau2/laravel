@@ -15,22 +15,60 @@
     </div>
 
     <div class="row">
+
+        <div class="col-xl-12">
+
+            <div class="form-group">
+                <div class="card">
+                    <div class="card-body">
+                        <form action="{{route('index4')}}">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <input type="text"
+                                               value="{{request()->get('start_year')}}"
+                                               placeholder="ปีเริ่มต้น"
+                                               class="form-control"
+                                               name="start_year">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <input type="text"
+                                               value="{{request()->get('end_year')}}"
+                                               placeholder="ปีสิ้นสุด"
+                                               class="form-control"
+                                               name="end_year">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <button class="btn btn-primary">ค้นหา</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <div class="col-xl-12">
             <div class="row">
 
 
-{{--                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">--}}
-{{--                    <div class="card mb-3">--}}
-{{--                        <div class="card-header">--}}
-{{--                            <h3><i class="fa fa-line-chart"></i> กราฟแสดงข้อมูลบุคลากรสายวิชาการตามคุณวุฒิ</h3>--}}
-{{--                        </div>--}}
+                {{--                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">--}}
+                {{--                    <div class="card mb-3">--}}
+                {{--                        <div class="card-header">--}}
+                {{--                            <h3><i class="fa fa-line-chart"></i> กราฟแสดงข้อมูลบุคลากรสายวิชาการตามคุณวุฒิ</h3>--}}
+                {{--                        </div>--}}
 
-{{--                        <div class="card-body">--}}
-{{--                            <canvas id="comboBarLineChart2"></canvas>--}}
-{{--                        </div>--}}
-{{--                        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>--}}
-{{--                    </div><!-- end card-->--}}
-{{--                </div>--}}
+                {{--                        <div class="card-body">--}}
+                {{--                            <canvas id="comboBarLineChart2"></canvas>--}}
+                {{--                        </div>--}}
+                {{--                        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>--}}
+                {{--                    </div><!-- end card-->--}}
+                {{--                </div>--}}
 
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                     <div class="card mb-3">
@@ -41,7 +79,81 @@
                         <div class="card-body">
                             <canvas id="comboLineChart2"></canvas>
                         </div>
-                        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+                        {{--                        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>--}}
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>
+                                    ปี/ตำแหน่ง
+                                </th>
+                                @foreach($years as $i=> $year)
+                                    <th class="text-center">
+                                        {{$year}}
+                                    </th>
+                                @endforeach
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>ศาสคร์ตราจารย์</td>
+                                @foreach($years as $i=> $year)
+                                    <td class="text-center">
+                                        {{$data[$year]['s_doctor'] }}
+                                    </td>
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <td>รศ.ดร</td>
+                                @foreach($years as $i=> $year)
+                                    <td class="text-center">
+                                        {{$data[$year]['rs_doctor'] }}
+                                    </td>
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <td>ผศ.ดร</td>
+                                @foreach($years as $i=> $year)
+                                    <td class="text-center">
+                                        {{$data[$year]['ps_doctor'] }}
+                                    </td>
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <td>ผศ</td>
+                                @foreach($years as $i=> $year)
+                                    <td class="text-center">
+                                        {{$data[$year]['ps_master'] }}
+                                    </td>
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <td>ดอร์คเตอร์</td>
+                                @foreach($years as $i=> $year)
+                                    <td class="text-center">
+                                        {{$data[$year]['doctor'] }}
+                                    </td>
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <td>ปริญญาโท</td>
+                                @foreach($years as $i=> $year)
+                                    <td class="text-center">
+                                        {{$data[$year]['master'] }}
+                                    </td>
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <th>
+                                    รวม
+                                </th>
+                                @foreach($years as $i=> $year)
+                                    <th class="text-center">
+                                        {{ $data[$year]['s_doctor'] + $data[$year]['rs_doctor'] + $data[$year]['ps_doctor'] + $data[$year]['ps_master'] + $data[$year]['doctor'] + $data[$year]['master'] }}
+                                    </th>
+                                @endforeach
+                            </tr>
+                            </tbody>
+                        </table>
                     </div><!-- end card-->
                 </div>
 
@@ -582,27 +694,84 @@
         //     }
         // });
 
+        var years = [parseInt("{{$years[0]-1}}")];
+        var doctor = [null];
+        var master = [null];
+        var ps_doctor = [null];
+        var ps_master = [null];
+        var rs_doctor = [null];
+        var s_doctor = [null];
+
+        @foreach($years as $i => $year)
+        years.push("{{$year}}")
+        @if($data[$year]['s_doctor'])
+        s_doctor.push(parseInt("{{$data[$year]['s_doctor']}}"))
+        @else
+        s_doctor.push(0)
+        @endif
+
+        @if($data[$year]['rs_doctor'])
+        rs_doctor.push(parseInt("{{$data[$year]['rs_doctor']}}"))
+        @else
+        rs_doctor.push(0)
+        @endif
+
+        @if($data[$year]['ps_doctor'])
+        ps_doctor.push(parseInt("{{$data[$year]['ps_doctor']}}"))
+        @else
+        ps_doctor.push(0)
+        @endif
+
+        @if($data[$year]['ps_master'])
+        ps_master.push(parseInt("{{$data[$year]['ps_master']}}"))
+        @else
+        ps_master.push(0)
+        @endif
+
+        @if($data[$year]['doctor'])
+        doctor.push(parseInt("{{$data[$year]['doctor']}}"))
+        @else
+        doctor.push(0)
+        @endif
+
+        @if($data[$year]['master'])
+        master.push(parseInt("{{$data[$year]['master']}}"))
+        @else
+        master.push(0)
+        @endif
+        @endforeach
+
+        var y = parseInt(years[years.length - 1]) + 1;
+
+        years.push(y)
+        doctor.push(null);
+        master.push(null);
+        ps_doctor.push(null);
+        ps_master.push(null);
+        rs_doctor.push(null);
+        s_doctor.push(null);
+
         var ctx2 = document.getElementById("comboLineChart2").getContext('2d');
         var comboBarLineChart2 = new Chart(ctx2, {
             type: 'bar',
             data: {
-                labels: ["2560", "2561", "2562", "2563", "2564"],
+                labels: years,
                 datasets: [
-                    {
-                        type: 'line',
-                        label: 'ป.เอก',
-                        borderColor: '#059BFF',
-                        borderWidth: 3,
-                        fill: false,
-                        data: [17, 11, 8, 11, 9],
-                    },
                     {
                         type: 'line',
                         label: 'ป.โท',
                         borderColor: '#0000FF',
                         borderWidth: 3,
                         fill: false,
-                        data: [12, 8, 3, 2, 7],
+                        data: master,
+                    },
+                    {
+                        type: 'line',
+                        label: 'ป.เอก',
+                        borderColor: '#059BFF',
+                        borderWidth: 3,
+                        fill: false,
+                        data: doctor,
                     },
                     {
                         type: 'line',
@@ -610,7 +779,15 @@
                         borderColor: '#484c4f',
                         borderWidth: 3,
                         fill: false,
-                        data: [12, 19, 3, 5, 2],
+                        data: ps_doctor,
+                    },
+                    {
+                        type: 'line',
+                        label: 'รศ.โท',
+                        borderColor: '#FF0000',
+                        borderWidth: 3,
+                        fill: false,
+                        data: ps_master,
                     },
                     {
                         type: 'line',
@@ -618,16 +795,24 @@
                         borderColor: '#00FF00',
                         borderWidth: 3,
                         fill: false,
-                        data: [19, 3, 12, 5, 2],
+                        data: rs_doctor,
                     },
                     {
-                        type: 'bar',
-                        label: '',
-                        borderColor: '#FFFFFFFF',
+                        type: 'line',
+                        label: 'ศ.ดร.',
+                        borderColor: '#FF00FF',
                         borderWidth: 3,
                         fill: false,
-                        data: [0,0,0,0,0],
-                    },
+                        data: s_doctor,
+                    }
+                    // {
+                    //     type: 'bar',
+                    //     label: '',
+                    //     borderColor: '#FFFFFF',
+                    //     borderWidth: 1,
+                    //     fill: false,
+                    //     data: ps_master,
+                    // },
                 ],
                 borderWidth: 1
             },
@@ -635,51 +820,51 @@
                 scales: {
                     yAxes: [{
                         ticks: {
-                            beginAtZero:true
+                            beginAtZero: true
                         }
                     }]
                 }
             }
         });
 
-        // comboBarLineChart
-        var ctx2 = document.getElementById("comboBarLineChart").getContext('2d');
-        var comboBarLineChart = new Chart(ctx2, {
-            type: 'bar',
-            data: {
-                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                datasets: [{
-                    type: 'line',
-                    label: 'Dataset 1',
-                    borderColor: '#484c4f',
-                    borderWidth: 3,
-                    fill: false,
-                    data: [12, 19, 3, 5, 2, 3, 13, 17, 11, 8, 11, 9],
-                }, {
-                    type: 'bar',
-                    label: 'Dataset 2',
-                    backgroundColor: '#FF6B8A',
-                    data: [10, 11, 7, 5, 9, 13, 10, 16, 7, 8, 12, 5],
-                    borderColor: 'white',
-                    borderWidth: 0
-                }, {
-                    type: 'bar',
-                    label: 'Dataset 3',
-                    backgroundColor: '#059BFF',
-                    data: [10, 11, 7, 5, 9, 13, 10, 16, 7, 8, 12, 5],
-                }],
-                borderWidth: 1
-            },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero:true
-                        }
-                    }]
-                }
-            }
-        });
+        // // comboBarLineChart
+        // var ctx2 = document.getElementById("comboBarLineChart").getContext('2d');
+        // var comboBarLineChart = new Chart(ctx2, {
+        //     type: 'bar',
+        //     data: {
+        //         labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        //         datasets: [{
+        //             type: 'line',
+        //             label: 'Dataset 1',
+        //             borderColor: '#484c4f',
+        //             borderWidth: 3,
+        //             fill: false,
+        //             data: [12, 19, 3, 5, 2, 3, 13, 17, 11, 8, 11, 9],
+        //         }, {
+        //             type: 'bar',
+        //             label: 'Dataset 2',
+        //             backgroundColor: '#FF6B8A',
+        //             data: [10, 11, 7, 5, 9, 13, 10, 16, 7, 8, 12, 5],
+        //             borderColor: 'white',
+        //             borderWidth: 0
+        //         }, {
+        //             type: 'bar',
+        //             label: 'Dataset 3',
+        //             backgroundColor: '#059BFF',
+        //             data: [10, 11, 7, 5, 9, 13, 10, 16, 7, 8, 12, 5],
+        //         }],
+        //         borderWidth: 1
+        //     },
+        //     options: {
+        //         scales: {
+        //             yAxes: [{
+        //                 ticks: {
+        //                     beginAtZero:true
+        //                 }
+        //             }]
+        //         }
+        //     }
+        // });
 
     </script>
 @endsection

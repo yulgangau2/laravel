@@ -1,43 +1,47 @@
 <div class="left main-sidebar">
 
-    <div class="sidebar-inner leftscroll">
+    <div
+        style="position: fixed;overflow-x: hidden"
+        class="sidebar-inner leftscroll">
 
         <div id="sidebar-menu">
 
             <ul>
-
                 <li class="submenu">
                     <a class="{{
                         \Illuminate\Support\Facades\Route::currentRouteName() == 'index5'  ||
                         \Illuminate\Support\Facades\Route::currentRouteName() == 'view'
                     ? 'active' : '' }}"
-                       href="{{route('index5')}}"><i class="fa fa-fw fa-bars"></i>
+                       href="{{route('index5')}}"><i class="fa fa-fw fa-bookmark"></i>
                         <span>ข้อมูลพนักงาน</span>
                     </a>
                 </li>
                 <li class="submenu">
-                    <a class="{{ \Illuminate\Support\Facades\Route::currentRouteName() == 'index' ? 'active' : '' }}"
+                    <a class="{{
+                        \Illuminate\Support\Facades\Route::currentRouteName() == 'index' ||
+                        \Illuminate\Support\Facades\Route::currentRouteName() == 'index2'
+                            ? 'active' : '' }}"
 
-                       href="{{route('index')}}"><i class="fa fa-fw fa-bars"></i>
+                       href="{{route('index2')}}"><i class="fa fa-fw fa-exchange"></i>
                         <span>บุคลากรใกล้ถูกเลิกจ้าง</span>
                     </a>
                 </li>
 
                 <li class="submenu">
                     <a class="{{ \Illuminate\Support\Facades\Route::currentRouteName() == 'index3' ? 'active' : '' }}"
-                       href="{{route('index3')}}"><i class="fa fa-fw fa-bars"></i>
+                       href="{{route('index3')}}"><i class="fa fa-fw fa-terminal"></i>
                         <span>ข้อมูลพนักงานประจำ/ชั่วคราว</span>
                     </a>
                 </li>
                 <li class="submenu">
                     <a class="{{ \Illuminate\Support\Facades\Route::currentRouteName() == 'index4' ? 'active' : '' }}"
-                       href="{{route('index4')}}"><i class="fa fa-fw fa-bars"></i>
+                       href="{{route('index4')}}"><i class="fa fa-fw fa-windows"></i>
                         <span>คุณวุฒิบุคลากรสายวิชาการ</span>
                     </a>
                 </li>
                 <li class="submenu">
                     <a class="{{ \Illuminate\Support\Facades\Route::currentRouteName() == 'setting' ? 'active' : '' }}"
-                       href="{{route('setting')}}"><i class="fa fa-fw fa-bars"></i>
+                       href="{{route('setting')}}"><i class="fa fa-fw fa-save"></i>
                         <span>ตั้งค่า</span>
                     </a>
                 </li>
@@ -46,7 +50,7 @@
 {{--                </li>--}}
 
                 <li class="submenu">
-                    <a href="charts.html"><i class="fa fa-fw fa-area-chart"></i>
+                    <a href="charts.html"><i class="fa fa-fw fa-long-arrow-left"></i>
                         <span>ออกจากระบบ</span>
                     </a>
                 </li>

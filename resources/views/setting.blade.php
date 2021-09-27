@@ -31,102 +31,171 @@
 
             <div class="card-body">
                 <div class="row">
-                    <div class="form-group">
-                        <form action="{{route('update')}}" method="post">
-                            {{csrf_field()}}
-
-                            <button class="btn btn-primary" type="submit">อัพเดทข้อมูลบุคลากร</button>
-                        </form>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <form action="{{route('update_employee')}}" method="post">
+                                {{csrf_field()}}
+                                <div class="card">
+                                    <div class="card-header">อัพเดทรายชื่อพนักงาน</div>
+                                    <div class="card-body">
+                                        <button class="btn btn-primary" type="submit">อัพเดท</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-{{--                <div class="row">--}}
-{{--                    <div class="col-lg-6 col-md-6 col-xl-6">--}}
-{{--                        <div class="form-group">--}}
-{{--                            <h4>ชื่อ</h4>--}}
-{{--                            <input type="text" class="form-control" value="{{isset($user->FirstNameTha) ? $user->FirstNameTha : ''}}">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col-lg-6 col-md-6 col-xl-6">--}}
-{{--                        <div class="form-group">--}}
-{{--                            <h4>นามสกุล</h4>--}}
-{{--                            <input type="text" class="form-control" value="{{isset($user->LastNameTha) ? $user->LastNameTha : ''}}">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col-lg-6 col-md-6 col-xl-6">--}}
-{{--                        <div class="form-group">--}}
-{{--                            <h4>ชื่อ(ภาษาอังกฤษ)</h4>--}}
-{{--                            <input type="text" class="form-control" value="{{isset($user->FirstNameEng) ? $user->FirstNameEng : ''}}">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col-lg-6 col-md-6 col-xl-6">--}}
-{{--                        <div class="form-group">--}}
-{{--                            <h4>นามสกุล(ภาษาอังกฤษ)</h4>--}}
-{{--                            <input type="text" class="form-control" value="{{isset($user->LastNameEng) ? $user->LastNameEng : ''}}">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col-lg-6 col-md-6 col-xl-6">--}}
-{{--                        <div class="form-group">--}}
-{{--                            <h4>คำนำหน้า</h4>--}}
-{{--                            <input type="text" class="form-control" value="{{isset($user->PrenameTha) ? $user->PrenameTha : ''}}">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col-lg-6 col-md-6 col-xl-6">--}}
-{{--                        <div class="form-group">--}}
-{{--                            <h4>คำนำหน้า(ภาษาอังกฤษ)</h4>--}}
-{{--                            <input type="text" class="form-control" value="{{isset($user->LastNameTha) ? $user->LastNameTha : ''}}">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col-lg-6 col-md-6 col-xl-6">--}}
-{{--                        <div class="form-group">--}}
-{{--                            <h4>เพศ</h4>--}}
-{{--                            <input type="text" class="form-control" value="{{isset($user->SexNameTha) ? $user->SexNameTha : ''}}">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col-lg-6 col-md-6 col-xl-6">--}}
-{{--                        <div class="form-group">--}}
-{{--                            <h4>กรุ๊ปเลือด</h4>--}}
-{{--                            <input type="text" class="form-control" value="{{isset($user->BloodTypeNameEng) ? $user->BloodTypeNameEng : ''}}">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col-lg-6 col-md-6 col-xl-6">--}}
-{{--                        <div class="form-group">--}}
-{{--                            <h4>วันเกิด</h4>--}}
-{{--                            <input type="text" class="form-control" value="{{isset($user->BirthDate) ? $user->BirthDate : ''}}">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col-lg-6 col-md-6 col-xl-6">--}}
-{{--                        <div class="form-group">--}}
-{{--                            <h4>หมายเลขบัตรประชาชน</h4>--}}
-{{--                            <input type="text" class="form-control" value="{{isset($user->PersonalID) ? $user->PersonalID : ''}}">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col-lg-6 col-md-6 col-xl-6">--}}
-{{--                        <div class="form-group">--}}
-{{--                            <h4>อีเมลมหาวิทยาลัย</h4>--}}
-{{--                            <input type="text" class="form-control" value="{{isset($user->EmailCMU) ? $user->EmailCMU : ''}}">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col-lg-6 col-md-6 col-xl-6">--}}
-{{--                        <div class="form-group">--}}
-{{--                            <h4>ที่อยู่ ไม่มี</h4>--}}
-{{--                            <input type="text" class="form-control" value="{{isset($user->LastNameTha) ? $user->LastNameTha : ''}}">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col-lg-6 col-md-6 col-xl-6">--}}
-{{--                        <div class="form-group">--}}
-{{--                            <h4>อายุตามปีปฏิทิน ไม่มี</h4>--}}
-{{--                            <input type="text" class="form-control" value="{{isset($user->LastNameTha) ? $user->LastNameTha : ''}}">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
 
-{{--                    <div class="col-lg-6 col-md-6 col-xl-6">--}}
-{{--                        <div class="form-group">--}}
-{{--                            <h4>อายุจริง ไม่มี</h4>--}}
-{{--                            <input type="text" class="form-control" value="{{isset($user->LastNameTha) ? $user->LastNameTha : ''}}">--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <form action="{{route('update_work_current_info')}}" method="post">
+                                {{csrf_field()}}
+                                <div class="card">
+                                    <div class="card-header">อัพเดทการทำงานปัจจุบัน</div>
+                                    <div class="card-body">
+                                        <button class="btn btn-primary" type="submit">อัพเดท</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
-{{--                </div>--}}
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <form action="{{route('update_personal_info')}}" method="post">
+                                {{csrf_field()}}
+                                <div class="card">
+                                    <div class="card-header">อัพเดทข้อมูลส่วนบุคคล</div>
+                                    <div class="card-body">
+                                        <button class="btn btn-primary" type="submit">อัพเดท</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <form action="{{route('update_history_worker')}}" method="post">
+                                {{csrf_field()}}
+                                <div class="card">
+                                    <div class="card-header">อัพเดทประวัติการทำงาน</div>
+                                    <div class="card-body">
+                                        <button class="btn btn-primary" type="submit">อัพเดท</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <form action="{{route('update_employee_education')}}" method="post">
+                                {{csrf_field()}}
+                                <div class="card">
+                                    <div class="card-header">อัพเดทประวัติการศึกษา</div>
+                                    <div class="card-body">
+                                        <button class="btn btn-primary" type="submit">อัพเดท</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <form action="{{route('update_employee_executive')}}" method="post">
+                                {{csrf_field()}}
+                                <div class="card">
+                                    <div class="card-header">อัพเดทตำแหน่งบริหาร</div>
+                                    <div class="card-body">
+                                        <button class="btn btn-primary" type="submit">อัพเดท</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <form action="{{route('update_employee_leavehistory')}}" method="post">
+                                {{csrf_field()}}
+                                <div class="card">
+                                    <div class="card-header">อัพเดทข้อมูลการลาราชการ</div>
+                                    <div class="card-body">
+                                        <button class="btn btn-primary" type="submit">อัพเดท</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <form action="{{route('update_employee_leaveeducation')}}" method="post">
+                                {{csrf_field()}}
+                                <div class="card">
+                                    <div class="card-header">อัพเดทข้อมูลการลาศึกษา</div>
+                                    <div class="card-body">
+                                        <button class="btn btn-primary" type="submit">อัพเดท</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <form action="{{route('update_employee_address')}}" method="post">
+                                {{csrf_field()}}
+                                <div class="card">
+                                    <div class="card-header">อัพเดทที่อยู่</div>
+                                    <div class="card-body">
+                                        <button class="btn btn-primary" type="submit">อัพเดท</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <form action="{{route('update_employee_fame')}}" method="post">
+                                {{csrf_field()}}
+                                <div class="card">
+                                    <div class="card-header">อัพเดท</div>
+                                    <div class="card-body">
+                                        <button class="btn btn-primary" type="submit">อัพเดท</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
         </div>
     </div>

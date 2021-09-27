@@ -73,13 +73,13 @@
 <script src="{{asset('assets/js/jquery.nicescroll.js')}}"></script>
 
 <!-- App js -->
-<script src="{{asset('assets/js/pikeadmin.js')}}"></script>
+{{--<script src="{{asset('assets/js/pikeadmin.js')}}"></script>--}}
 
 <!-- BEGIN Java Script for this page -->
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+{{--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>--}}
+{{--<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>--}}
+{{--<script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>--}}
 
 <!-- Counter-Up-->
 <script src="{{asset('assets/plugins/waypoints/lib/jquery.waypoints.min.js')}}"></script>
@@ -99,11 +99,6 @@
 </script>
 
 <script>
-
-
-
-
-
 
     var ctx3 = document.getElementById("doughnutChart").getContext('2d');
     var doughnutChart = new Chart(ctx3, {
@@ -140,8 +135,8 @@
 <script src="{{asset('assets/js/pikeadmin.js')}}"></script>
 
 <!-- BEGIN Java Script for this page -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{{--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>--}}
+<script src="{{asset('chart.js')}}"></script>
 
 <script>
 
