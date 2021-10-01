@@ -49,7 +49,7 @@
                                 <td colspan="5">
                                     <form action="{{route('upload_layoff')}}"
                                           enctype="multipart/form-data"
-                                          method="get">
+                                          method="post">
                                         {{csrf_field()}}
                                         <div class="row">
                                             <div class="col-md-5">

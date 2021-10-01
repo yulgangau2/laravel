@@ -36,7 +36,7 @@ Route::group(['prefix' => 'admin'], function () {
 
 Route::group(['prefix'=> 'update'],function(){
     // Get All Employee
-    Route::get('upload_layoff', [\App\Http\Controllers\UpdateController::class, 'upload_layoff'])->name('upload_layoff');
+    Route::post('upload_layoff', [\App\Http\Controllers\UpdateController::class, 'upload_layoff'])->name('upload_layoff');
     Route::get('update_employee', [\App\Http\Controllers\UpdateController::class, 'update_employee'])->name('update_employee');
 
     //update Personal Info
