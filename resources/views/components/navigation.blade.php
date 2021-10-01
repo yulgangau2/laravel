@@ -1,11 +1,14 @@
-<div class="headerbar">
 
+<div class="headerbar">
     <!-- LOGO -->
     <div class="headerbar-left">
         <a href="{{route('index')}}" class="logo">
             <img alt="Logo" src="https://sap.camtsmartoffice.com/v1r//img/camt_b.png?v2" />
             <span style="color:#493A33;font-size:16px;">CAMT</span>
         </a>
+{{--        <div class="path-route">--}}
+{{--            <a href="/v1r/">CAMT SMART OFFICE</a>--}}
+{{--        </div>--}}
     </div>
 
     <nav class="navbar-custom">
@@ -173,12 +176,33 @@
 {{--            </li>--}}
 
 {{--        </ul>--}}
-
+        <ul class="list-inline float-right mb-0">
+            <li class="list-inline-item dropdown notif">
+                <a class="nav-link dropdown-toggle nav-user" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                    <span>Admin</span>
+                    <img src="https://sap.camtsmartoffice.com/v1r/lib/pike/assets/images/avatars/admin.png" alt="Profile image" class="avatar-rounded">
+                </a>
+                <div class="dropdown-menu dropdown-menu-right profile-dropdown ">
+{{--                    <div class="dropdown-item noti-title"> <h5 class="text-overflow">--}}
+{{--                            <small>มนัสชัย โอนอ่อน</small>--}}
+{{--                        </h5> </div>--}}
+{{--                    <a href="/v1r/hr/personInfo?id=1529900675740" class="dropdown-item notify-item"> <i class="fa fa-user"></i> <span>ข้อมูลส่วนตัว</span> </a>--}}
+{{--                    <a href="/v1r/hr/person?id=1529900675740" class="dropdown-item notify-item"> <i class="fa fa-user"></i> <span>การเข้า-ออกงาน</span> </a>--}}
+{{--                    <a href="/v1r/finance/payrollSlipPerson?id=1529900675740" class="dropdown-item notify-item"> <i class="fa fa-money"></i> <span>Slip เงินเดือน</span> </a>--}}
+{{--                    <a href="#" class="dropdown-item notify-item disabled"> <i class="fa fa-lock"></i> <span>ความปลอดภัย</span> </a>--}}
+{{--                    <a href="#" class="dropdown-item notify-item disabled"> <i class="fa fa-book"></i> <span>คู่มือการใช้งาน</span> </a>--}}
+                    <a href="/v1r/authen/logout" class="dropdown-item notify-item"> <i class="fa fa-power-off"></i> <span>ออกจากระบบ</span> </a>
+                </div>
+            </li>
+        </ul>
         <ul class="list-inline menu-left mb-0">
             <li class="float-left">
                 <button class="button-menu-mobile open-left">
                     <i class="fa fa-fw fa-bars"></i>
                 </button>
+                <div class="path-route">
+                    <a style="color: white" href="/v1r/">CAMT SMART OFFICE</a>
+                </div>
             </li>
         </ul>
 

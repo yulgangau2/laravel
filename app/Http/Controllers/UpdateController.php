@@ -8,12 +8,14 @@ use App\Employee;
 use App\EmployeeEducation;
 use App\EmployeeExecutive;
 use App\EmployeeHistoryWork;
+use App\EmployeeHrPosition;
 use App\EmployeeLeaveEducation;
 use App\EmployeePositionHistory;
 use App\Executive;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class UpdateController extends Controller
 {
@@ -70,74 +72,10 @@ class UpdateController extends Controller
         return $json;
     }
 
-    public function update_employee(Request $request)
-    {
-        $orgId = '0000000021';
-        $api = new ApiController();
-        $token = $api->getToken("mishr.$orgId.employee.member");
-
-        $json = $this->getALlEmployee($orgId, $token);
-
-        DB::beginTransaction();
-        try {
-
-            foreach ($json['data'] as $i => $data) {
-                $emp = Employee::query()
-                    ->where('personalID', $data['personalID'])
-                    ->orWhere('emailCMU', $data['email'])
-                    ->first();
-                if (!$emp) {
-                    $emp = new Employee();
-//                    $emp->prenameTha = $data['prenameTha'];
-                    $emp->emailCMU = $data['email'];
-                    $emp->personalID = $data['personalID'];
-                    $emp->save();
-
-                }
-//                $emp->prenamePositionTha = $data['prenamePositionTha'];
-//                $emp->firstNameTha = $data['firstNameTha'];
-//                $emp->middleNameTha = $data['middleNameTha'];
-//                $emp->lastNameTha = $data['lastNameTha'];
-////                $emp->positionNameTha = $data['positionNameTha'];
-////                $emp->hrPositionNumber = $data['hrPositionNumber'];
-//
-////                $emp->facultyNameTha = $data['facultyNameTha'];
-////                $emp->departmentNameTha = $data['departmentNameTha'];
-////                $emp->employeeTypeID = $data['employeeTypeID'];
-//                $emp->employeeTypeNameTha = $data['employeeTypeNameTha'];
-//                $emp->inDate = $data['inDate'];
-//                $emp->educationLevelNameTha = $data['educationLevelNameTha'];
-////                if (($data['positionID'] == 287 || $data['positionID'] == 176) && $data['departmentNameTha'] == 'สำนักวิชาการศิลปะ สื่อ และเทคโนโลยี' && ($data['educationLevelNameTha'] == 'ปริญญาเอก' ||  $data['educationLevelNameTha'] == 'ปริญญาโท')){
-////                if (($data['positionNameTha'] == 'รองศาสตราจารย์' || $data['positionNameTha'] == 'ศาสตราจารย์' || $data['positionNameTha'] == 'ผู้ช่วยศาสตราจารย์' || $data['positionNameTha'] == 'อาจารย์') && ($data['educationLevelNameTha'] == 'ปริญญาเอก' ||  $data['educationLevelNameTha'] == 'ปริญญาโท')){
-//                if (($data['positionNameTha'] == 'รองศาสตราจารย์' || $data['positionNameTha'] == 'ศาสตราจารย์' || $data['positionNameTha'] == 'ผู้ช่วยศาสตราจารย์' || $data['positionNameTha'] == 'อาจารย์')) {
-//                    $emp->TypeEmployee = 'อาจารย์';
-//                } else {
-//                    $emp->TypeEmployee = 'พนักงาน';
-//                }
-                $emp->save();
-
-            }
-
-            DB::commit();
-            return redirect()->back()->with([
-                'success' => true,
-                'message' => 'อัพเดทข้อมูลสำเร็จ'
-            ]);
-        } catch (\Exception $exception) {
-            DB::rollBack();
-
-            dd($exception->getMessage());
-            return redirect()->back()->with([
-                'success' => false,
-                'message' => $exception->getMessage()
-            ]);
-        }
-
-
-    }
 
     public function getEmployeeWorker($perId, $orgId, $token)
     {
+        ini_set('max_execution_time', '1200');
 
         $curl = curl_init();
 
@@ -164,6 +102,8 @@ class UpdateController extends Controller
     }
 
 
+
+
     public function check_priority($position){
 
         $priority = 99;
@@ -180,18 +120,152 @@ class UpdateController extends Controller
         return $priority;
 
     }
+
+    public function upload_layoff(Request $request){
+        ini_set('max_execution_time', '1200');
+
+        $file = $request->file('layoff');
+        DB::beginTransaction();
+        try{
+            if ($file){
+                \Illuminate\Support\Facades\DB::table('lay_offs')->delete();
+                $path = Storage::putFile('public', $file);
+                $open = fopen('storage/'.basename($path), "r");
+//
+                $data =[];
+                while (($row = fgetcsv($open, 1000, ",")) !== FALSE)
+                {
+                    if ($row[0] == "" || $row[1] == ""){
+                        continue;
+                    }
+                    $name = explode("\n",$row[1]);
+
+                    $start_red_at = null;
+                    $end_red_at = null;
+                    $danger_colspan = null;
+
+                    if ($row[3] == 'อาจารย์'){
+//            $start_red_at = \Carbon\Carbon::createFromFormat('d/m/y',$row[12])->addYears(543)->addDay()->format('d/m/Y');
+                        $end_red_at =  \Carbon\Carbon::createFromFormat('d/m/y',$row[12])->addYears(543)->addYears(2)->format('d/m/Y');
+                        $danger_colspan = 2;
+                    }
+
+//        dd( $row,\Carbon\Carbon::createFromFormat('d/m/y',$row[7])->format('d/m/Y'));
+                    $tmp = [
+                        'firstname' => $name[0],
+                        'lastname' => $name[1],
+                        'no' => $row[2],
+                        'position' => $row[3],
+                        'first_day' => \Carbon\Carbon::createFromFormat('d/m/y',$row[5])->addYears(543)->format('d/m/Y'),
+                        'start_green_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[6])->addYears(543)->format('d/m/Y'),
+                        'end_green_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[9])->addYears(543)->format('d/m/Y'),
+                        'safe_colspan' => $row[8],
+                        'start_yellow_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[11])->addYears(543)->format('d/m/Y'),
+                        'end_yellow_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[12])->addYears(543)->format('d/m/Y'),
+                        'warning_colspan' => $row[10],
+
+                        'start_red_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[13])->addYears(543)->format('d/m/Y'),
+                        'end_red_at' =>  \Carbon\Carbon::createFromFormat('d/m/y',$row[12])->addYears(543)->addYears(2)->format('d/m/Y'),
+                        'danger_colspan' => $danger_colspan,
+
+
+//            'test8' => $row[15],
+//            'leave_education' => $row[16],
+
+                    ];
+                    $data[] = $tmp;
+                    // Read the data
+                }
+
+                fclose($open);
+                unlink('storage/'.basename($path));
+                \Illuminate\Support\Facades\DB::table('lay_offs')->insert($data);
+            }
+            DB::commit();
+            return redirect()->back()->with([
+                'success' => true,
+                'message' => "อัพโหลดข้อมูลสำเร็จ"
+            ]);
+        }catch (\Exception $exception){
+            DB::rollBack();
+            return redirect()->back()->withErrors([
+                'success' => false,
+                'message' => $exception->getMessage()
+            ]);
+        }
+
+
+    }
+    public function update_employee(Request $request)
+    {
+        ini_set('max_execution_time', '1200');
+
+        $orgId = '0000000021';
+        $api = new ApiController();
+        $token = $api->getToken("mishr.$orgId.employee.member");
+
+        if (!$token) {
+            return redirect()->back()->withErrors([
+                'success' => false,
+                'message' => "ไม่ได้รับ Token"
+            ]);
+        }
+        $json = $this->getALlEmployee($orgId, $token);
+
+        DB::beginTransaction();
+        try {
+
+            foreach ($json['data'] as $i => $data) {
+                $emp = Employee::query()
+                    ->where('personalID', $data['personalID'])
+                    ->orWhere('emailCMU', $data['email'])
+                    ->first();
+                if (!$emp) {
+                    $emp = new Employee();
+//                    $emp->prenameTha = $data['prenameTha'];
+                    $emp->emailCMU = $data['email'];
+                    $emp->personalID = $data['personalID'];
+                    $emp->save();
+
+                }
+                $emp->save();
+            }
+
+            DB::commit();
+            return redirect()->back()->with([
+                'success' => true,
+                'message' => 'อัพเดทข้อมูลสำเร็จ'
+            ]);
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            return redirect()->back()->withErrors([
+                'success' => false,
+                'message' => $exception->getMessage()
+            ]);
+        }
+
+
+    }
+
     public function update_history_worker(Request $request)
     {
+        ini_set('max_execution_time', '1200');
+
         $orgId = '0000000021';
 
         $api = new ApiController();
 
+        $token = $api->getToken("mishr.$orgId.workhistory");
+
+        if (!$token) {
+            return redirect()->back()->withErrors([
+                'success' => false,
+                'message' => "ไม่ได้รับ Token"
+            ]);
+        }
 
         DB::beginTransaction();
         try {
-            $token = $api->getToken("mishr.$orgId.workhistory");
-
-
             $emps = Employee::query()
                 ->get();
 
@@ -358,167 +432,28 @@ class UpdateController extends Controller
                                 $empPosition->Detail = $his->Detail;
                                 $empPosition->OrganizationFullNameTha = $his->OrganizationFullNameTha;
                                 $empPosition->save();
-                                dd($empPosition);
+                            }else if ($his->EmployeeTypeNameTha == 'พนักงานมหาวิทยาลัยประจำ' && $empPosition->EmployeeTypeNameTha != "พนักงานมหาวิทยาลัยประจำ"){
+                                $empPosition->year = $year;
+                                $empPosition->employee_id = $emp->id;
+                                $empPosition->PositionName = $his->PositionName;
+                                $empPosition->ReferenceDocumentTypeNameTha = $his->ReferenceDocumentTypeNameTha;
+                                $empPosition->EmployeeAssignDate = $his->EmployeeAssignDate;
+
+                                if ($his->EmployeeEndDate && $his->EmployeeEndDate != '') {
+                                    $empPosition->EmployeeEndDate = $his->EmployeeEndDate;
+                                }
+
+                                $empPosition->CurrentSalaryRate = $his->CurrentSalaryRate;
+                                $empPosition->EmployeeTypeNameTha = $his->EmployeeTypeNameTha;
+                                $empPosition->OtherMoney = $his->OtherMoney;
+                                $empPosition->Detail = $his->Detail;
+                                $empPosition->OrganizationFullNameTha = $his->OrganizationFullNameTha;
+                                $empPosition->save();
                             }
                         }
 
                         $old = $his;
                     }
-
-
-//                    $check_change_position = null;
-//                    $old = null;
-
-                    /*foreach ($json['data']['positionHistoryList'] as $j => $position) {
-
-                        $year = (int)(Carbon::createFromFormat('d/m/Y', $position['employeeAssignDate'])->format('Y'));
-                        $empPosition = EmployeePositionHistory::query()
-                            ->where('employee_id', '=', $emp->id)
-                            ->where('year', '=', $year)
-                            ->first();
-
-
-                        if ($empPosition) {
-                            //change start year of position
-                            if ($empPosition->PositionName == $position['positionName']) {
-                                if ($year == $check_change_position) {
-                                    continue;
-                                }
-                                $empPosition->year = $year;
-                                $empPosition->PositionName = $position['positionName'];
-                                $empPosition->ReferenceDocumentTypeNameTha = $position['referenceDocumentTypeNameTha'];
-                                $empPosition->EmployeeAssignDate = $position['employeeAssignDate'];
-
-                                if ($position['employeeEndDate'] && $position['employeeEndDate'] != '') {
-                                    $empPosition->EmployeeEndDate = $position['employeeEndDate'];
-                                }
-
-                                $empPosition->CurrentSalaryRate = $position['currentSalaryRate'];
-                                $empPosition->EmployeeTypeNameTha = $position['employeeTypeNameTha'];
-                                $empPosition->OtherMoney = $position['otherMoney'];
-                                $empPosition->Detail = $position['detail'];
-                                $empPosition->OrganizationFullNameTha = $position['organizationFullNameTha'];
-                                $empPosition->save();
-
-                                ///new position
-                            } elseif ($empPosition->PositionName != $position['positionName']) {
-                                if ($position['referenceDocumentTypeNameTha'] == "เปลี่ยนตำแหน่ง") {
-
-                                    $empPosition->year = $year;
-                                    $empPosition->PositionName = $position['positionName'];
-                                    $empPosition->ReferenceDocumentTypeNameTha = $position['referenceDocumentTypeNameTha'];
-                                    $empPosition->EmployeeAssignDate = $position['employeeAssignDate'];
-
-                                    if ($position['employeeEndDate'] && $position['employeeEndDate'] != '') {
-                                        $empPosition->EmployeeEndDate = $position['employeeEndDate'];
-                                    }
-
-                                    $empPosition->CurrentSalaryRate = $position['currentSalaryRate'];
-                                    $empPosition->EmployeeTypeNameTha = $position['employeeTypeNameTha'];
-                                    $empPosition->OtherMoney = $position['otherMoney'];
-                                    $empPosition->Detail = $position['detail'];
-                                    $empPosition->OrganizationFullNameTha = $position['organizationFullNameTha'];
-                                    $empPosition->save();
-
-                                    $check_change_position = $year;
-                                } else {
-                                    if ($position['positionName'] == 'ศาสตราจารย์') {
-                                        $empPosition->PositionName = $position['positionName'];
-                                        $empPosition->ReferenceDocumentTypeNameTha = $position['referenceDocumentTypeNameTha'];
-                                        $empPosition->EmployeeAssignDate = $position['employeeAssignDate'];
-
-                                        if ($position['employeeEndDate'] && $position['employeeEndDate'] != '') {
-                                            $empPosition->EmployeeEndDate = $position['employeeEndDate'];
-                                        }
-
-                                        $empPosition->CurrentSalaryRate = $position['currentSalaryRate'];
-                                        $empPosition->EmployeeTypeNameTha = $position['employeeTypeNameTha'];
-                                        $empPosition->OtherMoney = $position['otherMoney'];
-                                        $empPosition->Detail = $position['detail'];
-                                        $empPosition->OrganizationFullNameTha = $position['organizationFullNameTha'];
-                                        $empPosition->save();
-                                    } else if ($position['positionName'] == 'รองศาสตราจารย์' && $empPosition->PositionName != 'ศาสตราจารย์') {
-                                        $empPosition->PositionName = $position['positionName'];
-                                        $empPosition->ReferenceDocumentTypeNameTha = $position['referenceDocumentTypeNameTha'];
-                                        $empPosition->EmployeeAssignDate = $position['employeeAssignDate'];
-
-                                        if ($position['employeeEndDate'] && $position['employeeEndDate'] != '') {
-                                            $empPosition->EmployeeEndDate = $position['employeeEndDate'];
-                                        }
-
-                                        $empPosition->CurrentSalaryRate = $position['currentSalaryRate'];
-                                        $empPosition->EmployeeTypeNameTha = $position['employeeTypeNameTha'];
-                                        $empPosition->OtherMoney = $position['otherMoney'];
-                                        $empPosition->Detail = $position['detail'];
-                                        $empPosition->OrganizationFullNameTha = $position['organizationFullNameTha'];
-                                        $empPosition->save();
-                                    } else if ($position['positionName'] == 'ผู้ช่วยศาสตราจารย์' && $empPosition->PositionName != 'ศาสตราจารย์' && $empPosition->PositionName != 'รองศาสตราจารย์') {
-                                        $empPosition->PositionName = $position['positionName'];
-                                        $empPosition->ReferenceDocumentTypeNameTha = $position['referenceDocumentTypeNameTha'];
-                                        $empPosition->EmployeeAssignDate = $position['employeeAssignDate'];
-
-                                        if ($position['employeeEndDate'] && $position['employeeEndDate'] != '') {
-                                            $empPosition->EmployeeEndDate = $position['employeeEndDate'];
-                                        }
-
-                                        $empPosition->CurrentSalaryRate = $position['currentSalaryRate'];
-                                        $empPosition->EmployeeTypeNameTha = $position['employeeTypeNameTha'];
-                                        $empPosition->OtherMoney = $position['otherMoney'];
-                                        $empPosition->Detail = $position['detail'];
-                                        $empPosition->OrganizationFullNameTha = $position['organizationFullNameTha'];
-                                        $empPosition->save();
-                                    } else if ($position['positionName'] == 'อาจารย์' && $empPosition->PositionName != 'อาจารย์') {
-                                        $empPosition->PositionName = $position['positionName'];
-                                        $empPosition->ReferenceDocumentTypeNameTha = $position['referenceDocumentTypeNameTha'];
-                                        $empPosition->EmployeeAssignDate = $position['employeeAssignDate'];
-
-                                        if ($position['employeeEndDate'] && $position['employeeEndDate'] != '') {
-                                            $empPosition->EmployeeEndDate = $position['employeeEndDate'];
-                                        }
-
-                                        $empPosition->CurrentSalaryRate = $position['currentSalaryRate'];
-                                        $empPosition->EmployeeTypeNameTha = $position['employeeTypeNameTha'];
-                                        $empPosition->OtherMoney = $position['otherMoney'];
-                                        $empPosition->Detail = $position['detail'];
-                                        $empPosition->OrganizationFullNameTha = $position['organizationFullNameTha'];
-                                        $empPosition->save();
-                                    }
-                                }
-
-                                //1 year many position
-                            } else {
-
-                            }
-                        } else {
-
-                            if ($old && $old->PositionName != $position['positionName'] && $old['ReferenceDocumentTypeNameTha'] != 'เปลี่ยนตำแหน่ง') {
-                                $old->PositionName = $position['positionName'];
-                                $old->save();
-                            }
-
-                            $empPosition = new EmployeePositionHistory();
-                            $empPosition->year = $year;
-                            $empPosition->employee_id = $emp->id;
-                            $empPosition->PositionName = $position['positionName'];
-                            $empPosition->ReferenceDocumentTypeNameTha = $position['referenceDocumentTypeNameTha'];
-                            $empPosition->EmployeeAssignDate = $position['employeeAssignDate'];
-
-                            if ($position['employeeEndDate'] && $position['employeeEndDate'] != '') {
-                                $empPosition->EmployeeEndDate = $position['employeeEndDate'];
-                            }
-
-                            $empPosition->CurrentSalaryRate = $position['currentSalaryRate'];
-                            $empPosition->EmployeeTypeNameTha = $position['employeeTypeNameTha'];
-                            $empPosition->OtherMoney = $position['otherMoney'];
-                            $empPosition->Detail = $position['detail'];
-                            $empPosition->OrganizationFullNameTha = $position['organizationFullNameTha'];
-                            $empPosition->save();
-
-                            $old = $empPosition;
-
-                        }
-
-                    }*/
                 }
             }
 
@@ -529,74 +464,34 @@ class UpdateController extends Controller
             ]);
         } catch (\Exception $exception) {
             DB::rollBack();
-            dd($exception->getMessage());
 
-            return redirect()->back()->with(['success' => false,
-                'message' => $exception->getMessage()]);
+            return redirect()->back()->withErrors([
+                'success' => false,
+                'message' => $exception->getMessage()
+            ]);
         }
-
-//
-//        dd($token);
-//
-//
-//        try {
-//
-//            foreach ($json['data'] as $i => $data) {
-//                $emp = Employee::query()
-//                    ->where('personalID', $data['personalID'])
-//                    ->orWhere('emailCMU', $data['emailCMU'])
-//                    ->first();
-//                if (!$emp) {
-//                    $emp = new Employee();
-//                    $emp->prenameTha = $data[''];
-//                    $emp->emailCMU = $data['emailCMU'];
-//                    $emp->personalID = $data['personalID'];
-//
-//                }
-//                $emp->prenamePositionTha = $data[''];
-//                $emp->firstNameTha = $data['firstNameTha'];
-//                $emp->middleNameTha = $data['middleNameTha'];
-//                $emp->lastNameTha = $data['lastNameTha'];
-//                $emp->positionNameTha = $data['positionNameTha'];
-//                $emp->hrPositionNumber = $data['hrPositionNumber'];
-//                $emp->facultyNameTha = $data['facultyNameTha'];
-//                $emp->departmentNameTha = $data['departmentNameTha'];
-//                $emp->employeeTypeID = $data['employeeTypeID'];
-//                $emp->employeeTypeNameTha = $data['employeeTypeNameTha'];
-//                $emp->inDate = $data['inDate'];
-//                $emp->educationLevelNameTha = $data['educationLevelNameTha'];
-//                $emp->save();
-//
-//            }
-//
-//            DB::commit();
-//            return redirect()->back()->with([
-//                'success' => true,
-//                'message' => 'อัพเดทข้อมูลสำเร็จ'
-//            ]);
-//        } catch (\Exception $exception) {
-//            DB::rollBack();
-//
-//            return redirect()->back()->with([
-//                'success' => false,
-//                'message' => $exception->getMessage()
-//            ]);
-//        }
-
 
     }
 
     public function update_work_current_info(Request $request)
     {
         $orgId = '0000000021';
+        ini_set('max_execution_time', '1200');
 
         $api = new ApiController();
+
+        $token = $api->getToken("mishr.$orgId.workcurrentinfo");
+
+        if (!$token) {
+            return redirect()->back()->withErrors([
+                'success' => false,
+                'message' => "ไม่ได้รับ Token"
+            ]);
+        }
 
 
         DB::beginTransaction();
         try {
-            $token = $api->getToken("mishr.$orgId.workcurrentinfo");
-
             $emps = Employee::query()
                 ->get();
 
@@ -635,6 +530,42 @@ class UpdateController extends Controller
                     }
 
                 }
+
+                $nowYear = (int)Carbon::now()->addYears(543)->format('Y');
+                $firstYear = (int)Carbon::createFromFormat('d/m/Y',$json['inDate'])->format('Y');
+
+                for ($year = $nowYear;$year>=$firstYear;$year--){
+                    $empHrPosition = EmployeeHrPosition::query()
+                        ->where('year',$year)
+                        ->where('employee_id',$emp->id)
+                        ->first();
+
+                    if (!$empHrPosition){
+                        $empHrPosition = new EmployeeHrPosition();
+                        $empHrPosition->year = $year;
+                        $empHrPosition->employee_id = $emp->id;
+                        if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
+                            $type = strpos($json['hrPositionNumber'], 'EP') !== false ? 'เชิงรุก' : 'พันธกิิจ';
+                            $empHrPosition->hrPositionNumber = $json['hrPositionNumber'];
+                            $empHrPosition->Type = $type;
+                        }
+                        $empHrPosition->save();
+                    }else{
+                        // Update Only Now Mont
+                        if ($year == $nowYear){
+                            $empHrPosition->year = $year;
+                            $empHrPosition->employee_id = $emp->id;
+                            if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
+                                $type = strpos($json['hrPositionNumber'], 'EP') !== false ? 'เชิงรุก' : 'พันธกิิจ';
+                                $empHrPosition->hrPositionNumber = $json['hrPositionNumber'];
+                                $empHrPosition->Type = $type;
+                            }
+                            $empHrPosition->save();
+                        }
+                    }
+
+
+                }
             }
 
             DB::commit();
@@ -644,9 +575,8 @@ class UpdateController extends Controller
             ]);
         } catch (\Exception $exception) {
             DB::rollBack();
-            dd($exception->getMessage());
 
-            return redirect()->back()->with([
+            return redirect()->back()->withErrors([
                 'success' => false,
                 'message' => $exception->getMessage()
             ]);
@@ -657,17 +587,20 @@ class UpdateController extends Controller
     public
     function update_personal_info(Request $request)
     {
+        ini_set('max_execution_time', '1200');
+
         $empoyees = Employee::query()
             ->get();
 
         $api = new ApiController();
         $orgId = '0000000021';
         $token1 = $api->getToken("mishr.$orgId.personalinfo");
-
         if (!$token1) {
-            dd('no token1');
+            return redirect()->back()->withErrors([
+                'success' => false,
+                'message' => "ไม่ได้รับ Token"
+            ]);
         }
-
         foreach ($empoyees as $i => $emp) {
             $perId = "$emp->PersonalID";
             $emailCmu = $emp->EmailCMU;
@@ -772,7 +705,6 @@ class UpdateController extends Controller
 //                    ]);
 
                 } catch (\Exception $exception) {
-                    dd($exception->getMessage());
                     DB::rollBack();
                     return redirect()->back()->withErrors([
                         'success' => false,
@@ -794,6 +726,8 @@ class UpdateController extends Controller
 
     public function update_employee_education(Request $request)
     {
+        ini_set('max_execution_time', '1200');
+
         $empoyees = Employee::query()
             ->get();
 
@@ -802,10 +736,11 @@ class UpdateController extends Controller
 
         $orgId = '0000000021';
         $token3 = $api->getToken("mishr.$orgId.education");
-
-
         if (!$token3) {
-            dd('no token3');
+            return redirect()->back()->withErrors([
+                'success' => false,
+                'message' => "ไม่ได้รับ Token"
+            ]);
         }
 
         foreach ($empoyees as $i => $emp) {
@@ -929,61 +864,17 @@ class UpdateController extends Controller
 
 
                         }
-
-
-//                        foreach ($json['educationList'] as $idx => $education) {
-//                            $ed = Education::query()
-//                                ->where('instituteName', $education['instituteName'])
-//                                ->where('curriculumName', $education['curriculumName'])
-//                                ->where('certificateName', $education['certificateName'])
-//                                ->where('major', $education['major'])
-//                                ->where('countryNameTha', $education['countryNameTha'])
-//                                ->first();
-//                            if (!$ed) {
-//                                $ed = new Education();
-//                                $ed->instituteName = $education['instituteName'];
-//                                $ed->curriculumName = $education['curriculumName'];
-//                                $ed->certificateName = $education['certificateName'];
-//                                $ed->major = $education['major'];
-//                                $ed->educationLevelNameTha = $education['educationLevelNameTha'];
-//                                $ed->countryNameTha = $education['countryNameTha'];
-//                                $ed->save();
-//                            }
-//
-//
-//                            $empEd = EmployeeEducation::query()
-//                                ->where('graduateYear', $education['graduateYear'])
-//                                ->where('employee_id', $ed->id)
-//                                ->where('education_id', $ed->id)
-//                                ->first();
-//
-//                            if (!$empEd) {
-//
-//                                $empEd = new EmployeeEducation();
-//                                $empEd->employee_id = $user->id;
-//                                $empEd->education_id = $ed->id;
-//                            }
-//
-//                            $empEd->graduateYear = $education['graduateYear'];
-//                            $empEd->educationStatusName = $education['educationStatusName'];
-//                            $empEd->educationStatusNowName = $education['educationStatusNowName'];
-//                            $empEd->save();
-//
-//                            if ($idx == 0) {
-//                                $emp->educationLevelNameTha = $education['educationLevelNameTha'];
-//                                $emp->save();
-//                            }
-//
-//
-//                        }
                     }
                     DB::commit();
 
 
+
+                    return redirect()->back()->with([
+                        'success' => false,
+                        'message' => 'อัพเดทข้อมูลสำเร็จ'
+                    ]);
                 } catch (\Exception $exception) {
                     DB::rollBack();
-
-                    dd($exception->getMessage());
                     return redirect()->back()->withErrors([
                         'success' => false,
                         'message' => $exception->getMessage()
@@ -992,58 +883,11 @@ class UpdateController extends Controller
 
             }
         }
-
-        return redirect()->back()->with([
-            'success' => false,
-            'message' => 'อัพเดทข้อมูลสำเร็จ'
-        ]);
-
-
-//            $perId = '3529900027779';
-////            $perId = '3560700333428';
-////            $perId = '3509900053192';
-//            $perId = '3700400962533';
-//            $perId = '3509901385385';
-
-//        $data = [];
-//        foreach ($users as $user) {
-//
-//            $date = Carbon::parse($user['Indate']);
-//            $date2 = Carbon::parse($user['EposDate']);
-//
-//
-//            $name = $user['PrenameTha'] . ' ' . $users['FirstNameTha'] . ' ' . $users['LastNameTha'];
-//            $position = $user['PrenamePositionTha'];
-//            $start_at = $user['FirstWorkDate'];
-//            $contain_at = $user['Indate'];
-//            $exit_at = $user['EposDate'];
-//
-////            $start = Carbon::make($user['start_at'])->format('Y');
-//            $contain = Carbon::make($user['Indate'])->format('Y');
-//            $exit = Carbon::make($user['EposDate'])->format('Y');
-//
-//            if ($year_end < (int)$exit) {
-//                $year_end = (int)$exit;
-//            }
-//            $among = $date->diffInDays($date2);
-//            $tmp = [
-//                'name' => $name,
-//                'among' => $among,
-//                'start_at' => $start_at,
-//                'contain_at' => $contain_at,
-//                'exit_at' => $exit_at,
-//                'position' => $position,
-//                'range' => 0,
-//                'start' => (int)$contain,
-//                'end' => (int)$exit
-//            ];
-//            $data[] = $tmp;
-//        }
-
     }
 
     public function update_employee_executive(Request $request)
     {
+        ini_set('max_execution_time', '1200');
         $empoyees = Employee::query()
             ->get();
 
@@ -1054,8 +898,12 @@ class UpdateController extends Controller
         $token2 = $api->getToken("mishr.$orgId.executive");
 
         if (!$token2) {
-            dd('no token2');
+            return redirect()->back()->withErrors([
+                'success' => false,
+                'message' => "ไม่ได้รับ Token"
+            ]);
         }
+
 
 
         DB::beginTransaction();
@@ -1146,9 +994,13 @@ class UpdateController extends Controller
                 }
             }
             DB::commit();
+            return redirect()->back()->with([
+                'success' => false,
+                'message' => 'อัพเดทข้อมูลสำเร็จ'
+            ]);
+
 
         } catch (\Exception $exception) {
-            dd($exception->getMessage(), $i, $amount);
             DB::rollBack();
             return redirect()->back()->withErrors([
                 'success' => false,
@@ -1156,59 +1008,13 @@ class UpdateController extends Controller
             ]);
         }
 
-        return redirect()->back()->with([
-            'success' => false,
-            'message' => 'อัพเดทข้อมูลสำเร็จ'
-        ]);
-
-
-//            $perId = '3529900027779';
-////            $perId = '3560700333428';
-////            $perId = '3509900053192';
-//            $perId = '3700400962533';
-//            $perId = '3509901385385';
-
-//        $data = [];
-//        foreach ($users as $user) {
-//
-//            $date = Carbon::parse($user['Indate']);
-//            $date2 = Carbon::parse($user['EposDate']);
-//
-//
-//            $name = $user['PrenameTha'] . ' ' . $users['FirstNameTha'] . ' ' . $users['LastNameTha'];
-//            $position = $user['PrenamePositionTha'];
-//            $start_at = $user['FirstWorkDate'];
-//            $contain_at = $user['Indate'];
-//            $exit_at = $user['EposDate'];
-//
-////            $start = Carbon::make($user['start_at'])->format('Y');
-//            $contain = Carbon::make($user['Indate'])->format('Y');
-//            $exit = Carbon::make($user['EposDate'])->format('Y');
-//
-//            if ($year_end < (int)$exit) {
-//                $year_end = (int)$exit;
-//            }
-//            $among = $date->diffInDays($date2);
-//            $tmp = [
-//                'name' => $name,
-//                'among' => $among,
-//                'start_at' => $start_at,
-//                'contain_at' => $contain_at,
-//                'exit_at' => $exit_at,
-//                'position' => $position,
-//                'range' => 0,
-//                'start' => (int)$contain,
-//                'end' => (int)$exit
-//            ];
-//            $data[] = $tmp;
-//        }
-
     }
 
 
-    public
-    function update_employee_leavehistory(Request $request)
+    public function update_employee_leavehistory(Request $request)
     {
+        ini_set('max_execution_time', '1200');
+
         $empoyees = Employee::query()
             ->get();
 
@@ -1217,10 +1023,13 @@ class UpdateController extends Controller
 
         $orgId = '0000000021';
         $token2 = $api->getToken("mishr.$orgId.leavehistory");
-
         if (!$token2) {
-            dd('no token2');
+            return redirect()->back()->withErrors([
+                'success' => false,
+                'message' => "ไม่ได้รับ Token"
+            ]);
         }
+
 
         $start_date = '2019-10-01';
         $end_date = '2020-09-30';
@@ -1250,18 +1059,28 @@ class UpdateController extends Controller
                         //      "employeeLeaveID" => 32
                         //      "leaveTypeID" => 1
                     }
+                    DB::commit();
+                    return redirect()->back()->with([
+                        'success' => false,
+                        'message' => 'อัพเดทข้อมูลสำเร็จ'
+                    ]);
                 } catch (\Exception $exception) {
                     DB::rollBack();
-                    dd($exception->getMessage());
+                    return redirect()->back()->withErrors([
+                        'success' => false,
+                        'message' => $exception->getMessage()
+                    ]);
+
                 }
             }
         }
 
     }
 
-    public
-    function update_employee_leaveeducation(Request $request)
+    public function update_employee_leaveeducation(Request $request)
     {
+
+        ini_set('max_execution_time', '1200');
         $empoyees = Employee::query()
             ->get();
 
@@ -1270,9 +1089,11 @@ class UpdateController extends Controller
 
         $orgId = '0000000021';
         $token2 = $api->getToken("mishr.$orgId.leaveeducation");
-
         if (!$token2) {
-            dd('no token2');
+            return redirect()->back()->withErrors([
+                'success' => false,
+                'message' => "ไม่ได้รับ Token"
+            ]);
         }
 
 
@@ -1339,19 +1160,24 @@ class UpdateController extends Controller
             }
 
             DB::commit();
-            dd("work");
+            return redirect()->back()->with([
+                'success' => false,
+                'message' => 'อัพเดทข้อมูลสำเร็จ'
+            ]);
 
         } catch (\Exception $exception) {
             DB::rollBack();
-
-            dd($exception->getMessage());
+            return redirect()->back()->withErrors([
+                'success' => false,
+                'message' => $exception->getMessage()
+            ]);
         }
     }
 
 
-    public
-    function update_employee_fame(Request $request)
+    public function update_employee_fame(Request $request)
     {
+        ini_set('max_execution_time', '1200');
         $empoyees = Employee::query()
             ->get();
 
@@ -1360,9 +1186,11 @@ class UpdateController extends Controller
 
         $orgId = '0000000021';
         $token2 = $api->getToken("mishr.$orgId.fame");
-
         if (!$token2) {
-            dd('no token2');
+            return redirect()->back()->withErrors([
+                'success' => false,
+                'message' => "ไม่ได้รับ Token"
+            ]);
         }
 
 
@@ -1388,17 +1216,28 @@ class UpdateController extends Controller
 //      "receiveReturnStatusName" => "- / -"
 //      "fameID" => 1
 
+                    DB::commit();
+                    return redirect()->back()->with([
+                        'success' => false,
+                        'message' => 'อัพเดทข้อมูลสำเร็จ'
+                    ]);
                 } catch (\Exception $exception) {
-
+                    DB::rollBack();
+                    return redirect()->back()->withErrors([
+                        'success' => false,
+                        'message' => $exception->getMessage()
+                    ]);
                 }
             }
         }
     }
 
 
-    public
-    function update_employee_address(Request $request)
+    public function update_employee_address(Request $request)
     {
+
+        ini_set('max_execution_time', '1200');
+
         $empoyees = Employee::query()
             ->get();
 
@@ -1407,10 +1246,11 @@ class UpdateController extends Controller
 
         $orgId = '0000000021';
         $token2 = $api->getToken("mishr.$orgId.address");
-        // ไม่ได้
-        dd($token2);
         if (!$token2) {
-            dd('no token2');
+            return redirect()->back()->withErrors([
+                'success' => false,
+                'message' => "ไม่ได้รับ Token"
+            ]);
         }
 
 
@@ -1422,13 +1262,22 @@ class UpdateController extends Controller
 
                 DB::beginTransaction();
                 try {
-
                     // 2 //
                     $json = $this->getData('https://mis-api.cmu.ac.th/hr/v2.2/employees/addresss/permanent', $orgId, $perId, $token2);
-                    dd($json);
-//                    $user = Employee::query()->where('personalID', $json['personalID'])->first();
+
+                    DB::commit();
+                    return redirect()->back()->with([
+                        'success' => false,
+                        'message' => 'อัพเดทข้อมูลสำเร็จ'
+                    ]);
+                    //                    $user = Employee::query()->where('personalID', $json['personalID'])->first();
 
                 } catch (\Exception $exception) {
+                    DB::rollBack();
+                    return redirect()->back()->withErrors([
+                        'success' => false,
+                        'message' => $exception->getMessage()
+                    ]);
 
                 }
             }

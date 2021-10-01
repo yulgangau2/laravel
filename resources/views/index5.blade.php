@@ -6,6 +6,15 @@
         .card {
             width: 100%;
         }
+        .mg {
+            margin-top: 35px;
+        }
+        @media only screen and (max-width: 600px) {
+            .mg {
+                width: 100%;
+                margin-top: 0;
+            }
+        }
     </style>
     <div class="row">
         <div class="col-xl-12">
@@ -33,7 +42,7 @@
                 <form action="{{route('index5')}}" method="get">
 
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-5 col-xs-12 col-sm-12">
                             <div class="form-group">
                                 <p>หน่วยงาน</p>
                             </div>
@@ -42,30 +51,37 @@
                                 <select name="agency_id" id="agency_id" class="form-control">
                                     <option value="">ทั้งหมด</option>
                                 @foreach($agencies as $i => $agency)
-                                        <option value="{{$agency->id}}">{{$agency->name}}</option>
+                                        <option
+                                            {{ $agency->id == request()->get('agenct_id') ? 'selected' :''  }}
+                                            value="{{$agency->id}}">{{$agency->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-9" style="margin-top: -17px;">
-                            <div class="form-group">
-                                <button
-                                    type="submit" class="btn btn-primary" style="float: right">ค้นหา
-                                </button>
-                            </div>
-
+                        <div class="col-md-5 col-xs-12 col-sm-12" >
                             <div class="form-group">
                                 <p>Search</p>
-                                <input type="text" class="form-control" name="search" placeholder="คียเวิร์ด">
+                                <input type="text"
+                                       value="{{request()->get('search')}}"
+                                       class="form-control" name="search"
+                                       placeholder="คียเวิร์ด">
                             </div>
                         </div>
+                        <div class="col-md-2 col-xs-12 col-sm-12" >
+                            <div class="form-group">
+                                <button
+                                    type="submit" class="mg btn btn-primary">ค้นหา
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
                 </form>
 
                 <div class="col-lg-12 col-md-12 col-xl-12" style="overflow: auto">
                     <div class="form-group">
                         <table class="table table-striped" style="overflow: auto">
-                            <thead style="overflow: auto">
+                            <thead style="background-color: #A46B51;color:white;overflow: auto">
                             <tr style="overflow: auto">
                                 <th>ลำดับ</th>
                                 <th>ชื่อ-สกุล</th>

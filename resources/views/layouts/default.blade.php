@@ -24,6 +24,36 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css"/>
     <!-- END CSS for this page -->
 
+    <style>
+        .btn {
+            background-color: #A46B51;
+            border-color: #A46B51;
+            color: white;
+        }
+
+        .btn:hover {
+            background-color: #FFFFFF!important;
+            color: #A46B51;
+            border: 1px solid #A46B51;
+        }
+
+        .btn:hover {
+            background-color: #A46B51;
+            border-color: #A46B51;
+        }
+        .path-route {
+            display: inline-block;
+            font-weight: 600;
+            padding: 15px 20px;
+            color: #FFF;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .path-route {
+               display: none;
+            }
+        }
+    </style>
     @yield('style')
 </head>
 
@@ -55,7 +85,7 @@
     </div>
     <!-- END content-page -->
 
-    @include('components.footer')
+{{--    @include('components.footer')--}}
 
 </div>
 <!-- END main -->

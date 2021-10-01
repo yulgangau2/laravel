@@ -18,11 +18,6 @@
             min-width: 100px !important;
         }
 
-        .min-w-150 {
-            width: 150px;
-            min-width: 150px !important;
-        }
-
         .min-w-200 {
             width: 200px;
             min-width: 200px !important;
@@ -96,7 +91,7 @@
                             <th>วันที่เริ่มงาน/วันที่ดำรงตำแหน่ง</th>
                             <th>วันที่บรรจุ</th>
                             <th>วันที่ถูกเลิกจ้าง</th>
-{{--                            <th>ตำแหน่ง</th>--}}
+                            <th>ตำแหน่ง</th>
                         </tr>
                         </thead>
 
@@ -105,11 +100,11 @@
                             @foreach($users as $i=> $user)
                                 <tr>
                                     <td class="min-w-300">{{$user['name']}}</td>
-                                    <td class="min-w-100 text-center">{{$user['among']}}</td>
+                                    <td class="min-w-100">{{$user['among']}}</td>
                                     <td class="min-w-100">{{$user['start_at']}}</td>
-                                    <td class="min-w-100">{{$user['contain']}}</td>
-                                    <td class="min-w-100 text-center">{{ $user['danger_bar_end'] ? $user['danger_bar_end']  : '-'}}</td>
-                                    <td class="min-w-150">{{$user['positionName']}}22</td>
+                                    <td class="min-w-100">{{$user['contain_at']}}</td>
+                                    <td class="min-w-100">{{$user['end_at']}}</td>
+                                    <td class="min-w-100">{{$user['positionName']}}</td>
                                 </tr>
                             @endforeach
                         @endif
@@ -120,7 +115,7 @@
                         <table class="table table-striped" style="overflow: auto">
                             <thead style="overflow: auto">
                             <tr style="overflow: auto">
-{{--                                <th></th>--}}
+                                <th></th>
                                 <th class="min-w min">ชื่อ-สกุล</th>
                                 <th>ระยะเวลาที่เหลือ(วัน)</th>
                                 <th>วันที่เริ่มงาน/วันที่ดำรงตำแหน่ง</th>
@@ -128,8 +123,10 @@
                                 <th>วันที่ถูกเลิกจ้าง</th>
                                 <th>ตำแหน่ง</th>
                                 @foreach($years as $i => $year)
-                                    <th style="width: 200px !important;min-width: 200px !important;">
-                                        {{$year}}
+                                    <th>
+                                        <span>
+                                            {{$year}}
+                                        </span>
 
                                         {{--                                    <a href="{{route('index',['type' => 'year'])}}"--}}
                                         {{--                                    {{$year}}--}}
@@ -142,39 +139,36 @@
                             <tbody>
                             @if($users && count($users) >0)
                                 @foreach($users as $i=> $user)
-
                                     <tr>
-{{--                                        <td>{{$i+1}}</td>--}}
+                                        <td>{{$i+1}}</td>
                                         <td class="min-w-300">{{$user['name']}}</td>
-                                        <td class="min-w-100 text-center">{{$user['among']}}</td>
+                                        <td class="min-w-100">{{$user['among']}}</td>
                                         <td class="min-w-100">{{$user['start_at']}}</td>
-                                        <td class="min-w-100">{{$user['contain']}}</td>
-                                        <td class="min-w-100 text-center">{{ $user['danger_bar_end'] ? $user['danger_bar_end']  : '-'}}</td>
+                                        <td class="min-w-100">{{$user['contain_at']}}</td>
+                                        <td class="min-w-100">{{$user['end_at']}}</td>
                                         <td class="min-w-100">{{$user['positionName']}}</td>
 
                                         @foreach($years as $i => $year)
-                                            @if($year == $user['year_start'])
+                                            @if($year == $user['start'])
                                                 @break
                                             @else
                                                 <td></td>
                                             @endif
                                         @endforeach
 
-                                        <td style="background-color:green;color: white"
-                                            colspan="{{$user['safe_colspan']}}"
+                                        <td style="background-color:green;color: white" colspan="{{$user['colspan_green']}}"
                                             class="text-center">
-                                            {{$user['safe_bar_start']}} - {{$user['safe_bar_end']}}
+                                            {{$user['text_green']}}
                                         </td>
-                                        <td style="background-color:yellow;color: black"
-                                            colspan="{{$user['warning_colspan']}}"
+                                        <td style="background-color:yellow;color: black" colspan="{{$user['colspan_yellow']}}"
                                             class="text-center">
-                                            {{$user['warning_bar_start']}} - {{$user['warning_bar_end']}}
+                                            {{$user['text_yellow']}}
                                         </td>
                                         @if($user['positionName'] == 'อาจารย์')
-                                            <td style="background-color:red;color: white"
-                                                colspan="{{$user['danger_colspan']}}"
+
+                                            <td style="background-color:red;color: white" colspan="{{$user['colspan_red']}}"
                                                 class="text-center">
-                                                {{$user['danger_bar_start']}} - {{$user['danger_bar_end']}}
+                                                {{$user['text_red']}}
                                             </td>
                                         @endif
 

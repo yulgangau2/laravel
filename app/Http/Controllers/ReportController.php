@@ -9,6 +9,7 @@ use App\Employee;
 use App\EmployeeEducation;
 use App\EmployeeExecutive;
 use App\EmployeeHistoryWork;
+use App\EmployeeHrPosition;
 use App\EmployeeLeaveEducation;
 use App\EmployeePositionHistory;
 use App\Executive;
@@ -443,7 +444,7 @@ class ReportController extends Controller
         $leyoffs = LayOff::query()
             ->get();
 
-        $first_year = Carbon::now()->addYears(543);
+        $first_year = Carbon::now()->addYears(543)->subYears(5);
         $end_year = Carbon::now()->addYears(543);
 
         foreach ($leyoffs as $i => $layoff) {
@@ -454,11 +455,12 @@ class ReportController extends Controller
             $s_year = Carbon::createFromFormat('d/m/Y', $layoff->start_green_at)->addYear()->format('Y');
 
             if ($layoff->end_red_at) {
-                $e = Carbon::createFromFormat('d/m/Y', $layoff->end_red_at);
+                $e = Carbon::createFromFormat('d/m/Y', $layoff->start_red_at);
                 $amount = $now->diffInDays($e);
                 $e_year = Carbon::createFromFormat('d/m/Y', $layoff->end_red_at)->format('Y');
             } else {
-                $e = Carbon::createFromFormat('d/m/Y', $layoff->end_yellow_at);
+                $e = Carbon::createFromFormat('d/m/Y', $layoff->start_red_at);
+//                $e = Carbon::createFromFormat('d/m/Y', $layoff->end_yellow_at);
                 $amount = $now->diffInDays($e);
                 $e_year = Carbon::createFromFormat('d/m/Y', $layoff->end_yellow_at)->format('Y');
             }
@@ -513,16 +515,21 @@ class ReportController extends Controller
         }
 
 
-        $users = $this->orderAmount($users);
-        // col span fail
-        $years = [];
-        for ($i = $first_year; $i < $end_year; $i++) {
+
+        if ($leyoffs && count($leyoffs) > 0) {
+            $users = $this->orderAmount($users);
+        }else{
+            $end_year = (int)$end_year->format('Y');
+            $first_year = (int)$first_year->format('Y');
+        }
+
+        for ($i = $first_year; $i <=$end_year; $i++) {
             $years[] = $i;
         }
 
 
         return view('new_logic', [
-            'users' => $users,
+            'users' => isset($users) ? $users : [],
             'years' => $years,
         ]);
     }
@@ -535,85 +542,225 @@ class ReportController extends Controller
             ->get()
             ->groupBy('id');
 
+
+
         $ids = Employee::query()
             ->whereNotIn('PositionName', $temp)
             ->pluck('id');
 
+        $emps = Employee::query()
+            ->whereIn('id', $ids)
+            ->get();
+
 
         $startYear = $request->get('start_year', 2560);
         $endYear = $request->get('end_year', 2564);
-        $years = [];
+
+        $searchYear = $request->get('search_year', 2564);
+        $hrPositions = EmployeeHrPosition::query()
+            ->where('year',$searchYear)
+            ->get()
+            ->groupBy('employee_id');
 
         $history = EmployeePositionHistory::query()
             ->where('year', '>=', $startYear)
             ->where('year', '<=', $endYear)
             ->whereIn('employee_id', $ids)
             ->orderBy('year', 'ASC')
+            ->with(['employee'])
             ->get()
-            ->groupBy('year');
+            ->groupBy(['year', 'employee_id']);
 
-//        dd($history);
+
         $data = [
             'full_look' => 0,
             'full_pun' => 0,
             'part_look' => 0,
             'part_pun' => 0,
+
         ];
+        $years = [];
 
-        foreach ($history as $y => $h) {
-            $count = 0;
+        $x = [];
+        if (count($history) > 0) {
+            foreach ($history as $y => $h) {
+                $count = 0;
 
-            $years[] = $y;
-            $data[$y] = [
-                'full_academic' => 0,
-                'full_support' => 0,
-                'part_academic' => 0,
-                'part_support' => 0
-            ];
+                $years[] = $y;
+                $data[$y] = [
+                    'full_academic' => 0,
+                    'full_support' => 0,
+                    'part_academic' => 0,
+                    'part_support' => 0
+                ];
 
-            foreach ($h as $i => $emp) {
+                foreach ($emps as $i => $emp) {
 
-//                if($employee->employeeTypeNameTha == 'พนักงานมหาวิทยาลัยประจำ'){
-                if ($emp->EmployeeTypeNameTha == 'พนักงานมหาวิทยาลัยประจำ') {
+                    $employee = isset($h[$emp->id]) && count($h[$emp->id]) > 0 ? $h[$emp->id][0] : null;
 
-                    if ($emp->PositionName == 'อาจารย์' || $emp->PositionName == 'ผู้ช่วยศาสตราจารย์' || $emp->PositionName == 'รองศาสตราจารย์' || $emp->PositionName == 'ศาสตราจารย์') {
-                        $data[$y]['full_academic'] += 1;
+                    if ($employee) {
+                        if ($employee->EmployeeTypeNameTha == 'พนักงานมหาวิทยาลัยประจำ') {
+                            if ($employee->PositionName == 'อาจารย์' || $employee->PositionName == 'ผู้ช่วยศาสตราจารย์' || $employee->PositionName == 'รองศาสตราจารย์' || $employee->PositionName == 'ศาสตราจารย์') {
+                                $data[$y]['full_academic'] += 1;
+                                if ($y == 2560) {
+                                    $x[] = $employee->employee->FullName;
+                                }
+                            } else {
+                                $data[$y]['full_support'] += 1;
+
+                            }
+                        } else if ($employee->EmployeeTypeNameTha == 'พนักงานมหาวิทยาลัยชั่วคราว') {
+                            if ($employee->PositionName == 'อาจารย์' || $employee->PositionName == 'ผู้ช่วยศาสตราจารย์' || $employee->PositionName == 'รองศาสตราจารย์' || $employee->PositionName == 'ศาสตราจารย์') {
+                                $data[$y]['part_academic'] += 1;
+                            } else {
+                                $data[$y]['part_support'] += 1;
+                            }
+                        }
+
+                        $count++;
                     } else {
-                        $data[$y]['full_support'] += 1;
-                    }
-                } else {
-                    if ($emp->PositionName == 'อาจารย์' || $emp->PositionName == 'ผู้ช่วยศาสตราจารย์' || $emp->PositionName == 'รองศาสตราจารย์' || $emp->PositionName == 'ศาสตราจารย์') {
-                        $data[$y]['part_academic'] += 1;
-                    } else {
-                        $data[$y]['part_support'] += 1;
+                        $employee = Employee::query()->where('id', $emp->id)->first();
+
+                        $firstWork = (int)Carbon::createFromFormat('d/m/Y', $emp->FirstWorkDate)->format('Y');
+                        $hisPoint = EmployeeHistoryWork::query()
+                            ->where('year', $y)
+                            ->where('employee_id', $emp->id)
+                            ->first();
+                        if ($firstWork <= $y && !$hisPoint) {
+                            if ($employee->employeeTypeNameTha == 'พนักงานมหาวิทยาลัยประจำ') {
+                                if ($employee->TypeEmployee == 'อาจารย์' || $employee->TypeEmployee == 'ผู้ช่วยศาสตราจารย์' || $employee->TypeEmployee == 'รองศาสตราจารย์' || $employee->TypeEmployee == 'ศาสตราจารย์') {
+                                    $data[$y]['full_academic'] += 1;
+                                    if ($y == 2560) {
+                                        $x[] = $employee->FullName;
+                                    }
+
+                                } else {
+                                    $data[$y]['full_support'] += 1;
+                                }
+                            } else if ($employee->employeeTypeNameTha == 'พนักงานมหาวิทยาลัยชั่วคราว') {
+                                if ($employee->TypeEmployee == 'อาจารย์' || $employee->TypeEmployee == 'ผู้ช่วยศาสตราจารย์' || $employee->PositionName == 'รองศาสตราจารย์' || $employee->TypeEmployee == 'ศาสตราจารย์') {
+                                    $data[$y]['part_academic'] += 1;
+
+                                } else {
+
+                                    $data[$y]['part_support'] += 1;
+                                }
+                            }
+                        }
                     }
                 }
-                $count++;
-            }
-        }
 
+
+//            foreach ($h as $i => $emp) {
+//
+////                if($employee->employeeTypeNameTha == 'พนักงานมหาวิทยาลัยประจำ'){
+//                if ($emp->EmployeeTypeNameTha == 'พนักงานมหาวิทยาลัยประจำ') {
+//
+//                    if ($emp->PositionName == 'อาจารย์' || $emp->PositionName == 'ผู้ช่วยศาสตราจารย์' || $emp->PositionName == 'รองศาสตราจารย์' || $emp->PositionName == 'ศาสตราจารย์') {
+//                        $data[$y]['part_academic'] += 1;
+//                    } else {
+//                        $data[$y]['part_support'] += 1;
+//                    }
+//                } else {
+//                    if ($emp->PositionName == 'อาจารย์' || $emp->PositionName == 'ผู้ช่วยศาสตราจารย์' || $emp->PositionName == 'รองศาสตราจารย์' || $emp->PositionName == 'ศาสตราจารย์') {
+//                        $data[$y]['part_academic'] += 1;
+//                        if ($y == 2563){
+//                            $x[] = $emp->employee->FullName;
+//                        }
+//                    } else {
+//                        $data[$y]['part_support'] += 1;
+//                    }
+//                }
+//                $count++;
+//            }
+            }
+        }else{
+
+            $data =[];
+            for ($y = $startYear;$y<=$endYear;$y++){
+
+                $years[] = $y;
+                $data[$y] = [
+                    'full_academic' => 0,
+                    'full_support' => 0,
+                    'part_academic' => 0,
+                    'part_support' => 0
+                ];
+            }
+
+        }
+        $data['full_look'] = 0;
+        $data['full_pun'] = 0;
+        $data['part_look'] = 0;
+        $data['part_pun'] = 0;
 
         ///////////////
         //ไม่ไช่เป็นเชิงรุก
         foreach ($employees as $id => $emp) {
-            if ($emp[0]->TypeEmployee == 'อาจารย์') {
-                if ($emp[0]->Type == 'เชิงรุก') {
-                    $data['full_look'] += 1;
+            $employee = isset($history[$searchYear][$id]) ? $history[$searchYear][$id][0] : null;
+
+            if ($employee) {
+                if ($employee->PositionName == 'อาจารย์' || $employee->PositionName == 'ผู้ช่วยศาสตราจารย์' || $employee->PositionName == 'รองศาสตราจารย์' || $employee->PositionName == 'ศาสตราจารย์') {
+
+                    if ($hrPositions[$emp[0]->id][0]->Type == 'เชิงรุก') {
+                        $data['full_look'] += 1;
+                    }else{
+                        $data['full_pun'] += 1;
+                    }
                 } else {
-                    $data['full_pun'] += 1;
+                    if ($hrPositions[$emp[0]->id][0] == 'เชิงรุก') {
+                        $data['part_look'] += 1;
+                    }else{
+                        $data['part_pun'] += 1;
+                    }
                 }
             } else {
-                if ($emp[0]->Type == 'เชิงรุก') {
-                    $data['part_look'] += 1;
-                } else {
-                    $data['part_pun'] += 1;
+                $employee = Employee::query()->where('id', $emp[0]->id)->first();
+
+                $firstWork = (int)Carbon::createFromFormat('d/m/Y',$employee->FirstWorkDate)->format('Y');
+                $hisPoint = EmployeeHistoryWork::query()
+                    ->where('year',$searchYear)
+                    ->where('employee_id',$employee->id)
+                    ->first();
+
+
+
+                if ($firstWork <= $searchYear && !$hisPoint ){
+                    if ($employee->TypeEmployee == 'อาจารย์' || $employee->TypeEmployee == 'ผู้ช่วยศาสตราจารย์' || $employee->TypeEmployee == 'รองศาสตราจารย์' || $employee->TypeEmployee == 'ศาสตราจารย์') {
+                        if ($hrPositions[$emp[0]->id][0]->Type == 'เชิงรุก') {
+                            $data['full_look'] += 1;
+                        }else{
+                            $data['full_pun'] += 1;
+                        }
+                    } else {
+
+                        if ($hrPositions[$emp[0]->id][0]->Type == 'เชิงรุก') {
+                            $data['part_look'] += 1;
+                        }else{
+                            $data['part_pun'] += 1;
+                        }
+                    }
                 }
+
             }
         }
 
-//        dd($data);
+//        if ($emp[0]->TypeEmployee == 'อาจารย์') {
+//            if ($emp[0]->Type == 'เชิงรุก') {
+//                $data['full_look'] += 1;
+//            } else {
+//                $data['full_pun'] += 1;
+//            }
+//        } else {
+//            if ($emp[0]->Type == 'เชิงรุก') {
+//                $data['part_look'] += 1;
+//            } else {
+//                $data['part_pun'] += 1;
+//            }
+//        }
 
 
+//        dd($x);
         return view('index3', [
             'data' => $data,
             'years' => $years
@@ -642,9 +789,6 @@ class ReportController extends Controller
             ->get();
 
 
-
-
-
 //        $history = EmployeeHistoryWork::query()
 //            ->where('year', '>=', $startYear)
 //            ->where('year', '<=', $endYear)
@@ -652,16 +796,16 @@ class ReportController extends Controller
 //            ->get()
 //            ->groupBy('year');
 
-        $history = EmployeePositionHistory::query()
-//            ->whereIn('employee_id','')
-            ->where('year', '>=', $startYear)
-            ->where('year', '<=', $endYear)
-            ->whereNotIn('employee_id', $emp_ids)
-            ->whereIn('PositionName', ['อาจารย์', 'ผู้ช่วยศาสตราจารย์', 'รองศาสตราจารย์'])
-            ->with(['employee'])
-            ->orderBy('year')
-            ->get()
-            ->groupBy('year');
+//        $history = EmployeePositionHistory::query()
+////            ->whereIn('employee_id','')
+//            ->where('year', '>=', $startYear)
+//            ->where('year', '<=', $endYear)
+//            ->whereNotIn('employee_id', $emp_ids)
+//            ->whereIn('PositionName', ['อาจารย์', 'ผู้ช่วยศาสตราจารย์', 'รองศาสตราจารย์'])
+//            ->with(['employee'])
+//            ->orderBy('year')
+//            ->get()
+//            ->groupBy('year');
 
         $history = EmployeePositionHistory::query()
 //            ->whereIn('employee_id','')
@@ -699,20 +843,21 @@ class ReportController extends Controller
         $x = [];
 
 
-        foreach ($history as $y => $h) {
-            $years[] = $y;
+        if(count($history) > 0) {
+            foreach ($history as $y => $h) {
+                $years[] = $y;
 
-            $data[$y]['doctor'] = 0;
-            $data[$y]['master'] = 0;
-            $data[$y]['ps_doctor'] = 0;
-            $data[$y]['ps_master'] = 0;
-            $data[$y]['s_doctor'] = 0;
-            $data[$y]['rs_doctor'] = 0;
+                $data[$y]['doctor'] = 0;
+                $data[$y]['master'] = 0;
+                $data[$y]['ps_doctor'] = 0;
+                $data[$y]['ps_master'] = 0;
+                $data[$y]['s_doctor'] = 0;
+                $data[$y]['rs_doctor'] = 0;
 
 
-            foreach ($emps as $i => $emp) {
-                $employee = isset($h[$emp->id]) && count($h[$emp->id]) > 0 ? $h[$emp->id][0] : null;
-                $gradueted = isset($grouped[$y][$emp->id]) ? $grouped[$y][$emp->id] : null;
+                foreach ($emps as $i => $emp) {
+                    $employee = isset($h[$emp->id]) && count($h[$emp->id]) > 0 ? $h[$emp->id][0] : null;
+                    $gradueted = isset($grouped[$y][$emp->id]) ? $grouped[$y][$emp->id] : null;
 
 
 //                if ($y == 2563 && $emp->id == 127);
@@ -720,55 +865,55 @@ class ReportController extends Controller
 //                    dd($employee,$gradueted);
 //                }
 
-                // data complete
-                if ($employee) {
-                    if ($gradueted == null) {
+                    // data complete
+                    if ($employee) {
+                        if ($gradueted == null) {
 
-                        $edu = EmployeeEducation::query()
-                            ->where('graduateYear', $y)
-                            ->where('employee_id', $employee->id)
-                            ->first();
+                            $edu = EmployeeEducation::query()
+                                ->where('graduateYear', $y)
+                                ->where('employee_id', $employee->id)
+                                ->first();
 
-                        if ($edu) {
-                            $gradueted = $edu->educationLevelNameTha;
-                        } else {
-                            $gradueted = 'other';
+                            if ($edu) {
+                                $gradueted = $edu->educationLevelNameTha;
+                            } else {
+                                $gradueted = 'other';
+                            }
                         }
-                    }
 //
-                    if ($employee->PositionName == 'ศาสตราจารย์') {
-                        $data[$y]['s_doctor'] += 1;
+                        if ($employee->PositionName == 'ศาสตราจารย์') {
+                            $data[$y]['s_doctor'] += 1;
 //                    if ($y == 2563){
 //                        $x[] = $his->employee->FullName;
 //                    }
-                    } else if ($employee->PositionName == 'รองศาสตราจารย์') {
-                        $data[$y]['rs_doctor'] += 1;
+                        } else if ($employee->PositionName == 'รองศาสตราจารย์') {
+                            $data[$y]['rs_doctor'] += 1;
 //                    if ($y == 2563){
 //                        $x[] = $emp->FullName;
 //                    }
-                    } else if ($employee->PositionName == 'ผู้ช่วยศาสตราจารย์' && $gradueted == "ปริญญาเอก") {
-                        $data[$y]['ps_doctor'] += 1;
+                        } else if ($employee->PositionName == 'ผู้ช่วยศาสตราจารย์' && $gradueted == "ปริญญาเอก") {
+                            $data[$y]['ps_doctor'] += 1;
 //                     if ($y == 2563){
 //                        $x[] = $emp->FullName;
 //                    }
-                    } else if ($employee->PositionName == 'ผู้ช่วยศาสตราจารย์' && $gradueted == 'ปริญญาโท') {
-                        $data[$y]['ps_master'] += 1;
+                        } else if ($employee->PositionName == 'ผู้ช่วยศาสตราจารย์' && $gradueted == 'ปริญญาโท') {
+                            $data[$y]['ps_master'] += 1;
 //                        if ($y == 2563){
 //                            $x[] = $emp->FullName;
 //                        }
-                    } else if ($gradueted == 'ปริญญาเอก') {
-                        $data[$y]['doctor'] += 1;
-                        if ($y == 2560){
-                            $x[] = $emp->FullName;
-                        }
+                        } else if ($gradueted == 'ปริญญาเอก') {
+                            $data[$y]['doctor'] += 1;
+                            if ($y == 2560) {
+                                $x[] = $emp->FullName;
+                            }
 //                        if ($employee->employee_id == 25 && $y == 2562) {
 //                            dd($gradueted, $grouped);
 //                        }
 //                    if ($y == 2563){
 //                        $x[] = $his->employee->FullName;
 //                    }
-                    } elseif ($gradueted == 'ปริญญาโท') {
-                        $data[$y]['master'] += 1;
+                        } elseif ($gradueted == 'ปริญญาโท') {
+                            $data[$y]['master'] += 1;
 //                        if ($y == 2563){
 //                            $x[] = $emp->FullName;
 //                        }
@@ -776,7 +921,7 @@ class ReportController extends Controller
 //                            $x[] = $emp->FullName;
 //                        }
 //                    $x[] = $his->employee->PersonalID;
-                    } else {
+                        } else {
 //                    $t[] = [
 //                        'id' => $his->employee_id,
 //                        'position' => $his->PositionName ,
@@ -785,32 +930,23 @@ class ReportController extends Controller
 //                        if ($his->PositionName == 'อาจารย์'){
 //                            dd($his,$gradueted,$y,$grouped[$y]);
 //                        }
-                    }
-                }else{
-//                    dd($emp,$y);
-                    //data not completed
-                    if ($gradueted == 'ปริญญาเอก') {
-                        $data[$y]['doctor'] += 1;
-                        if ($y == 2560){
-                            $x[] = $emp->FullName;
                         }
-                    } elseif ($gradueted == 'ปริญญาโท') {
-                        $data[$y]['master'] += 1;
+                    } else {
+//                    dd($emp,$y);
+                        //data not completed
+                        if ($gradueted == 'ปริญญาเอก') {
+                            $data[$y]['doctor'] += 1;
+                            if ($y == 2560) {
+                                $x[] = $emp->FullName;
+                            }
+                        } elseif ($gradueted == 'ปริญญาโท') {
+                            $data[$y]['master'] += 1;
 //                        if ($y == 2563){
 //                            $x[] = $emp->FullName;
 //                        }
+                        }
                     }
                 }
-//                if ($emp){
-//
-//                    dd(22);
-//                }else{
-//
-//                    dd(111);
-//
-//                }
-
-            }
 
 
 //            foreach ($h as $j => $his) {
@@ -888,6 +1024,21 @@ class ReportController extends Controller
 ////                        }
 //                }
 //            }
+            }
+        }else{
+
+            $data =[];
+            for ($y = $startYear;$y<=$endYear;$y++){
+
+                $years[] = $y;
+                $data[$y]['doctor'] = 0;
+                $data[$y]['master'] = 0;
+                $data[$y]['ps_doctor'] = 0;
+                $data[$y]['ps_master'] = 0;
+                $data[$y]['s_doctor'] = 0;
+                $data[$y]['rs_doctor'] = 0;
+            }
+
         }
 
 

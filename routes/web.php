@@ -13,20 +13,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('temp');
-});
+
+Route::get('', [\App\Http\Controllers\ReportController::class, 'index2'])->name('index5');
 
 
 Route::group(['prefix' => 'admin'], function () {
-    Route::get('', [\App\Http\Controllers\ReportController::class, 'index'])->name('index');
-    Route::get('index2', [\App\Http\Controllers\ReportController::class, 'index2'])->name('index2');
-//    Route::get('index2', [\App\Http\Controllers\ReportController::class, 'index2'])->name('index2');
-    Route::get('index3', [\App\Http\Controllers\ReportController::class, 'index3'])->name('index3');
-    Route::get('index4', [\App\Http\Controllers\ReportController::class, 'index4'])->name('index4');
+//    Route::get('', [\App\Http\Controllers\ReportController::class, 'index5'])->name('index5');
 
-    Route::get('index5', [\App\Http\Controllers\ReportController::class, 'index5'])->name('index5');
+    Route::get('employee', [\App\Http\Controllers\ReportController::class, 'index5'])->name('index5');
     Route::get('view/{id}', [\App\Http\Controllers\ReportController::class, 'view'])->name('view');
+
+    Route::get('', [\App\Http\Controllers\ReportController::class, 'index2'])->name('index');
+    Route::get('layoff', [\App\Http\Controllers\ReportController::class, 'index2'])->name('index2');
+//    Route::get('index2', [\App\Http\Controllers\ReportController::class, 'index2'])->name('index2');
+    Route::get('employee_dashboard', [\App\Http\Controllers\ReportController::class, 'index3'])->name('index3');
+    Route::get('education_dashboard', [\App\Http\Controllers\ReportController::class, 'index4'])->name('index4');
+
 
     Route::get('setting', [\App\Http\Controllers\ReportController::class, 'setting'])->name('setting');
 });
@@ -34,38 +36,39 @@ Route::group(['prefix' => 'admin'], function () {
 
 Route::group(['prefix'=> 'update'],function(){
     // Get All Employee
-    Route::post('update_employee', [\App\Http\Controllers\UpdateController::class, 'update_employee'])->name('update_employee');
+    Route::get('upload_layoff', [\App\Http\Controllers\UpdateController::class, 'upload_layoff'])->name('upload_layoff');
+    Route::get('update_employee', [\App\Http\Controllers\UpdateController::class, 'update_employee'])->name('update_employee');
 
     //update Personal Info
-    Route::post('update_personal_info', [\App\Http\Controllers\UpdateController::class, 'update_personal_info'])->name('update_personal_info');
+    Route::get('update_personal_info', [\App\Http\Controllers\UpdateController::class, 'update_personal_info'])->name('update_personal_info');
 
     //update history worker
-    Route::post('update_history_worker', [\App\Http\Controllers\UpdateController::class, 'update_history_worker'])->name('update_history_worker');
+    Route::get('update_history_worker', [\App\Http\Controllers\UpdateController::class, 'update_history_worker'])->name('update_history_worker');
 
     //update workcurrentinfo //check
-    Route::post('update_work_current_info', [\App\Http\Controllers\UpdateController::class, 'update_work_current_info'])->name('update_work_current_info');
+    Route::get('update_work_current_info', [\App\Http\Controllers\UpdateController::class, 'update_work_current_info'])->name('update_work_current_info');
 
 
     //update education
-    Route::post('update_employee_education', [\App\Http\Controllers\UpdateController::class, 'update_employee_education'])->name('update_employee_education');
+    Route::get('update_employee_education', [\App\Http\Controllers\UpdateController::class, 'update_employee_education'])->name('update_employee_education');
 
     //update executive
-    Route::post('update_employee_executive', [\App\Http\Controllers\UpdateController::class, 'update_employee_executive'])->name('update_employee_executive');
+    Route::get('update_employee_executive', [\App\Http\Controllers\UpdateController::class, 'update_employee_executive'])->name('update_employee_executive');
 
 
 
     //update leavehistory
-    Route::post('update_employee_leavehistory', [\App\Http\Controllers\UpdateController::class, 'update_employee_leavehistory'])->name('update_employee_leavehistory');
+    Route::get('update_employee_leavehistory', [\App\Http\Controllers\UpdateController::class, 'update_employee_leavehistory'])->name('update_employee_leavehistory');
 
     //update leaveeducation
-    Route::post('update_employee_leaveeducation', [\App\Http\Controllers\UpdateController::class, 'update_employee_leaveeducation'])->name('update_employee_leaveeducation');
+    Route::get('update_employee_leaveeducation', [\App\Http\Controllers\UpdateController::class, 'update_employee_leaveeducation'])->name('update_employee_leaveeducation');
 
 
     //update leaveeducation
-    Route::post('update_employee_fame', [\App\Http\Controllers\UpdateController::class, 'update_employee_fame'])->name('update_employee_fame');
+    Route::get('update_employee_fame', [\App\Http\Controllers\UpdateController::class, 'update_employee_fame'])->name('update_employee_fame');
 
     //update leaveeducation
-    Route::post('update_employee_address', [\App\Http\Controllers\UpdateController::class, 'update_employee_address'])->name('update_employee_address');
+    Route::get('update_employee_address', [\App\Http\Controllers\UpdateController::class, 'update_employee_address'])->name('update_employee_address');
 
 });
 

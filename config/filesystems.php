@@ -47,6 +47,23 @@ return [
             'driver' => 'local',
             'root' => storage_path('app'),
         ],
+        'custom-ftp' => [
+
+            'driver' => 'ftp',
+
+            'host' => '172.16.1.161',
+
+            'username' => 'CAMTsmartreport',
+
+            'password' => 'cqimNeVFS#N55',
+
+            // Optional FTP Settings...
+            // 'port'     => 21,
+            // 'root' => '/Example',
+            // 'passive'  => true,
+            // 'ssl'      => true,
+            // 'timeout'  => 30,
+        ],
 
         'public' => [
             'driver' => 'local',

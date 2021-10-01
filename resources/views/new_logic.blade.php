@@ -3,6 +3,83 @@
 @section('style')
     <style>
 
+        .tscroll {
+            overflow-x: scroll;
+            margin-bottom: 10px;
+            /*border: solid black 1px;*/
+        }
+
+
+
+        .tscroll table th:first-child {
+            position: sticky;
+            left: 0;
+            background-color: #A46B51;
+
+        }
+
+        .tscroll table th:nth-child(2) {
+            position: sticky;
+            left: 180px;
+            background-color: #A46B51;
+
+        }
+        .tscroll table th:nth-child(3) {
+            position: sticky;
+            left: 280px;
+            background-color: #A46B51;
+
+        }
+        .tscroll table th:nth-child(4) {
+            position: sticky;
+            left: 380px;
+            background-color: #A46B51;
+
+        }
+        .tscroll table th:nth-child(5) {
+            position: sticky;
+            left: 480px;
+            background-color: #A46B51;
+
+        }
+
+        .tscroll table td:first-child {
+            position: sticky;
+            left: 0;
+            background-color: white;
+
+        }
+
+        .tscroll table td:nth-child(2) {
+            position: sticky;
+            left: 180px;
+            background-color: white;
+
+        }
+        .tscroll table td:nth-child(3) {
+            position: sticky;
+            left: 280px;
+            background-color: white;
+
+        }
+        .tscroll table td:nth-child(4) {
+            position: sticky;
+            left: 380px;
+            background-color: white;
+
+        }
+        .tscroll table td:nth-child(5) {
+            position: sticky;
+            left: 480px;
+            background-color: white;
+
+        }
+
+        .tscroll td, .tscroll th {
+            /*border-bottom: dashed #888 1px;*/
+        }
+
+
         .min-w-50 {
             width: 50px;
             min-width: 50px !important;
@@ -21,6 +98,11 @@
         .min-w-150 {
             width: 150px;
             min-width: 150px !important;
+        }
+
+        .min-w-180 {
+            width: 180px;
+            min-width: 180px !important;
         }
 
         .min-w-200 {
@@ -42,6 +124,37 @@
         /*    width: auto  !important;;*/
         /*}*/
 
+        .type {
+            padding: 5px 15px;
+            color: #A46B51;
+            border: 1px solid #A46B51;
+            border-radius: 5px
+        }
+
+        .type:hover {
+            padding: 5px 15px;
+            color: white;
+            background-color: #A46B51;
+            border: 1px solid #A46B51;
+            border-radius: 5px
+        }
+
+        .type-active {
+            padding: 5px 15px;
+            color: white;
+            background-color: #A46B51;
+            border: 1px solid #A46B51;
+            border-radius: 5px
+        }
+
+        .type-active:hover {
+            background-color: white;
+            padding: 5px 15px;
+            color: #A46B51;
+            border: 1px solid #A46B51;
+            border-radius: 5px
+        }
+
     </style>
 @endsection
 
@@ -49,7 +162,7 @@
     <div class="row">
         <div class="col-xl-12">
             <div class="breadcrumb-holder">
-                <h1 class="main-title float-left">บุคลากรใกล้ถูกเลิกจ้าง</h1>
+                <h1 class="main-title float-left">รายงานข้อมูลอาจารย์ที่ใกล้จะถูกเลิกจ้าง</h1>
                 <ol class="breadcrumb float-right">
                     <li class="breadcrumb-item">Home</li>
                     <li class="breadcrumb-item active">บุคลากรใกล้ถูกเลิกจ้าง</li>
@@ -63,150 +176,169 @@
     <div class="row">
 
 
-        <div class="card">
+        <div class="card" style="width: 100%">
             <div class="card-header">
-                <h3><i class="fa fa-line-chart"></i>บุคลากรใกล้ถูกเลิกจ้าง</h3>
+                <h2><i class="fa fa-line-chart"></i>รายงานข้อมูลอาจารย์ที่ใกล้จะถูกเลิกจ้าง</h2>
             </div>
 
+
             <div class="card-body">
+                {{--                    <iframe class="chartjs-hidden-iframe" tabindex="-1"--}}
+                {{--                            style="display: block; overflow: hidden; border: 0px; margin: 0px; inset: 0px; height: 100%; width: 100%; position: absolute; pointer-events: none; z-index: -1;"></iframe>--}}
 
-                <div class="card-body">
-                    {{--                    <iframe class="chartjs-hidden-iframe" tabindex="-1"--}}
-                    {{--                            style="display: block; overflow: hidden; border: 0px; margin: 0px; inset: 0px; height: 100%; width: 100%; position: absolute; pointer-events: none; z-index: -1;"></iframe>--}}
-                    <div class="col-xs-6">
-                        {{--                        <h1>รายงานข้อมูลอาจารย์ที่ใกล้จะเลิกจ้าง</h1>--}}
-                    </div>
-                    <div class="col-xs-6">
-                        <a href="{{route('index2',['type' => 'month'])}}">รูปแบบเดือน</a>
-                        <a href="{{route('index2',['type' => 'year'])}}">รูปแบบปี</a>
-                    </div>
+                <div class="row">
+                    <div class="col-md-12">
 
-                </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-9 col-xs-8">
+                                    {{--                        <h1>รายงานข้อมูลอาจารย์ที่ใกล้จะเลิกจ้าง</h1>--}}
+                                </div>
+                                <div class="col-md-3 col-xs-4">
+                                    <div style="float: right">
+                                        <a
+                                            class="{{request()->get('type') == 'month' ? 'type-active' :'type'}}"
+                                            href="{{route('index2',['type' => 'month'])}}">รูปแบบตาราง</a>
+                                        <a
+                                            class="{{request()->get('type') != 'month' ? 'type-active' :'type'}}"
+                                            href="{{route('index2',['type' => 'year'])}}">รูปแบบกราฟ</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                <iframe class="chartjs-hidden-iframe" tabindex="-1"
-                        style="display: block; overflow: hidden; border: 0px; margin: 0px; inset: 0px; height: 100%; width: 100%; position: absolute; pointer-events: none; z-index: -1;"></iframe>
+                        {{--                <iframe class="chartjs-hidden-iframe" tabindex="-1"--}}
+                        {{--                        style="display: block; overflow: hidden; border: 0px; margin: 0px; inset: 0px; height: 100%; width: 100%; position: absolute; pointer-events: none; z-index: -1;"></iframe>--}}
 
 
-                @if(request()->get('type') && request()->get('type') == 'month')
-                    <table class="table table-striped" style="width: 100%">
-                        <thead style="overflow: auto">
-                        <tr style="overflow: auto">
-                            <th class="min-w min">ชื่อ-สกุล</th>
-                            <th>ระยะเวลาที่เหลือ(วัน)</th>
-                            <th>วันที่เริ่มงาน/วันที่ดำรงตำแหน่ง</th>
-                            <th>วันที่บรรจุ</th>
-                            <th>วันที่ถูกเลิกจ้าง</th>
-{{--                            <th>ตำแหน่ง</th>--}}
-                        </tr>
-                        </thead>
-
-                        <tbody>
-                        @if($users && count($users) >0)
-                            @foreach($users as $i=> $user)
-                                <tr>
-                                    <td class="min-w-300">{{$user['name']}}</td>
-                                    <td class="min-w-100 text-center">{{$user['amount']}}</td>
-                                    <td class="min-w-100">{{$user['first_dat']}}</td>
-                                    <td class="min-w-100">{{$user['contain']}}</td>
-                                    <td class="min-w-100 text-center">{{ $user['position']  == 'อาจารย์' ?  $user['danger_end_at']  : '-'}}</td>
-{{--                                    <td class="min-w-100 text-center">{{ $user['position'] == 'อาจารย์' ? $user['danger_end_at']  : '-'}}</td>--}}
-{{--                                    <td class="min-w-150">{{$user['อาจารย์']}}22</td>--}}
-                                </tr>
-                            @endforeach
-                        @endif
-                        </tbody>
-                    </table>
-                @else
-                    <div class="col-lg-12 col-md-12 col-xl-12" style="overflow: auto">
-                        <table class="table table-striped" style="overflow: auto">
-                            <thead style="overflow: auto">
-                            <tr style="overflow: auto">
-{{--                                <th></th>--}}
-                                <th class="min-w min">ชื่อ-สกุล</th>
-                                <th>ระยะเวลาที่เหลือ(วัน)</th>
-                                <th>วันที่เริ่มงาน/วันที่ดำรงตำแหน่ง</th>
-                                <th>วันที่บรรจุ</th>
-                                <th>วันที่ถูกเลิกจ้าง</th>
-                                <th>ตำแหน่ง</th>
-                                @foreach($years as $i => $year)
-                                    <th style="width: 200px !important;min-width: 200px !important;">
-                                        {{$year}}
-
-                                        {{--                                    <a href="{{route('index',['type' => 'year'])}}"--}}
-                                        {{--                                    {{$year}}--}}
-                                        {{--                                    </a>--}}
-                                    </th>
-                                @endforeach
-                            </tr>
-                            </thead>
-
-                            <tbody>
-                            @if($users && count($users) >0)
-                                @foreach($users as $i=> $user)
-
-                                    <tr>
-{{--                                        <td>{{$i+1}}</td>--}}
-                                        <td class="min-w-300">{{$user['name']}}</td>
-                                        <td class="min-w-100 text-center">{{$user['amount']}}</td>
-                                        <td class="min-w-100">{{$user['first_dat']}}</td>
-                                        <td class="min-w-100">{{$user['contain']}}</td>
-
-                                        <td class="min-w-100 text-center">{{ $user['position']  == 'อาจารย์' ?  $user['danger_end_at']  : '-'}}</td>
-                                        <td class="min-w-100">{{$user['position']}}</td>
-
-                                        @foreach($years as $i => $year)
-                                            @if($year == $user['year_start'])
-                                                @break
-                                            @else
-                                                <td></td>
-                                            @endif
-                                        @endforeach
-
-                                        <td style="background-color:green;color: white"
-                                            colspan="{{$user['safe_colspan']}}"
-                                            class="text-center">
-                                            {{$user['safe_start_at']}} - {{$user['safe_end_at']}}
-                                        </td>
-                                        <td style="background-color:yellow;color: black"
-                                            colspan="{{$user['warning_colspan']}}"
-                                            class="text-center">
-                                            {{$user['warning_start_at']}} - {{$user['warning_end_at']}}
-                                        </td>
-                                        @if($user['position'] == 'อาจารย์')
-                                            <td style="background-color:red;color: white"
-                                                colspan="{{$user['danger_colspan']}}"
-                                                class="text-center">
-                                                {{$user['danger_start_at']}} - {{$user['danger_end_at']}}
-                                            </td>
-                                        @endif
-
-                                        {{--                                        @foreach($years as $i => $year)--}}
-                                        {{--                                            @if($year >= $user['start'] && $year <= $user['end']  ? 'green' : '')--}}
-                                        {{--                                                @if($year < $user['start']+ $user['plus_green'])--}}
-                                        {{--                                                    <td style="background-color:green" class="text-center">--}}
-
-                                        {{--                                                        Test11--}}
-                                        {{--                                                    </td>--}}
-                                        {{--                                                @elseif($year< $user['start']+ $user['plus_yellow'])--}}
-                                        {{--                                                    <td style="background-color:yellow" class="text-center">--}}
-                                        {{--                                                        Test2--}}
-                                        {{--                                                    </td>--}}
-                                        {{--                                                @else--}}
-                                        {{--                                                    <td style="background-color:red" class="text-center">--}}
-                                        {{--                                                        Test3--}}
-                                        {{--                                                    </td>--}}
-                                        {{--                                                @endif--}}
-                                        {{--                                            @else--}}
-                                        {{--                                                <td></td>--}}
-                                        {{--                                            @endif--}}
-                                        {{--                                        @endforeach--}}
+                        @if(request()->get('type') && request()->get('type') == 'month')
+                            <div class="col-lg-12 col-md-12 col-xl-12" style="overflow: auto">
+                                <table class="table table-striped" style="width: 100%">
+                                    <thead style="background-color: #A46B51;color: white;overflow: auto">
+                                    <tr style="overflow: auto">
+                                        <th class="min-w-150 text-center">ชื่อ-สกุล</th>
+                                        <th class="min-w-100 text-center">ระยะเวลาที่เหลือ(วัน)</th>
+                                        <th class="min-w-100 text-center">วันที่เริ่มงาน/วันที่ดำรงตำแหน่ง</th>
+                                        <th class="min-w-100 text-center">วันที่บรรจุ</th>
+                                        <th class="min-w-100 text-center">วันที่ถูกเลิกจ้าง</th>
+                                        {{--                            <th>ตำแหน่ง</th>--}}
                                     </tr>
-                                @endforeach
-                            @endif
-                            </tbody>
-                        </table>
+                                    </thead>
+
+                                    <tbody>
+                                    @if($users && count($users) >0)
+                                        @foreach($users as $i=> $user)
+                                            <tr>
+                                                <td class="min-w-150">{{$user['name']}}</td>
+                                                <td class="min-w-100 text-center">{{$user['amount']}}</td>
+                                                <td class="min-w-100 text-center">{{$user['first_dat']}}</td>
+                                                <td class="min-w-100 text-center">{{$user['contain']}}</td>
+                                                <td class="min-w-100 text-center">{{ $user['position']  == 'อาจารย์' ?  $user['danger_start_at']  : '-'}}</td>
+                                                {{--                                    <td class="min-w-100 text-center">{{ $user['position'] == 'อาจารย์' ? $user['danger_end_at']  : '-'}}</td>--}}
+                                                {{--                                    <td class="min-w-150">{{$user['อาจารย์']}}22</td>--}}
+                                            </tr>
+                                        @endforeach
+                                    @endif
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="col-lg-12 col-md-12 col-xl-12 tscroll" style="overflow: auto;padding: 0">
+                                <table class="table" style="overflow: auto;border-spacing: 0;border-collapse: separate;">
+                                    <thead style="background-color: #A46B51;color: white;overflow: auto">
+                                    <tr style="overflow: auto">
+                                        {{--                                <th></th>--}}
+                                        <th class="min-w min text-center">ชื่อ-สกุล</th>
+                                        <th class="text-center">ระยะเวลาที่เหลือ(วัน)</th>
+                                        <th class="text-center">วันที่เริ่มงาน/วันที่ดำรงตำแหน่ง</th>
+                                        <th class="text-center">วันที่บรรจุ</th>
+                                        <th class="text-center">วันที่ถูกเลิกจ้าง</th>
+                                        {{--                                <th>ตำแหน่ง</th>--}}
+                                        @foreach($years as $i => $year)
+                                            <th style="width: 200px !important;min-width: 200px !important;">
+                                                {{$year}}
+
+                                                {{--                                    <a href="{{route('index',['type' => 'year'])}}"--}}
+                                                {{--                                    {{$year}}--}}
+                                                {{--                                    </a>--}}
+                                            </th>
+                                        @endforeach
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+                                    @if($users && count($users) >0)
+                                        @foreach($users as $i=> $user)
+
+                                            <tr>
+                                                {{--                                        <td>{{$i+1}}</td>--}}
+                                                <td class="min-w-180">{{$user['name']}}</td>
+                                                <td class="min-w-100 text-center">{{$user['amount']}}</td>
+                                                <td class="min-w-100 text-center">{{$user['first_dat']}}</td>
+                                                <td class="min-w-100 text-center">{{$user['contain']}}</td>
+
+                                                <td class="min-w-100 text-center">{{ $user['position']  == 'อาจารย์' ?  $user['danger_start_at']  : '-'}}</td>
+                                                {{--                                        <td class="min-w-100">{{$user['position']}}</td>--}}
+
+                                                @foreach($years as $i => $year)
+                                                    @if($year == $user['year_start'])
+                                                        @break
+                                                    @else
+                                                        <td></td>
+                                                    @endif
+                                                @endforeach
+
+                                                <td style="background-color:#64864A;color: white"
+                                                    colspan="{{$user['safe_colspan']}}"
+                                                    class="text-center">
+                                                    {{$user['safe_start_at']}} - {{$user['safe_end_at']}}
+                                                </td>
+                                                <td style="background-color:#FFC700;color: black"
+                                                    colspan="{{$user['warning_colspan']}}"
+                                                    class="text-center">
+                                                    {{$user['warning_start_at']}} - {{$user['warning_end_at']}}
+                                                </td>
+                                                @if($user['position'] == 'อาจารย์')
+                                                    <td style="background-color:#FF284B;color: white"
+                                                        colspan="{{$user['danger_colspan']}}"
+                                                        class="text-center">
+                                                        {{$user['danger_start_at']}} - {{$user['danger_end_at']}}
+                                                    </td>
+                                                @endif
+
+                                                {{--                                        @foreach($years as $i => $year)--}}
+                                                {{--                                            @if($year >= $user['start'] && $year <= $user['end']  ? 'green' : '')--}}
+                                                {{--                                                @if($year < $user['start']+ $user['plus_green'])--}}
+                                                {{--                                                    <td style="background-color:green" class="text-center">--}}
+
+                                                {{--                                                        Test11--}}
+                                                {{--                                                    </td>--}}
+                                                {{--                                                @elseif($year< $user['start']+ $user['plus_yellow'])--}}
+                                                {{--                                                    <td style="background-color:yellow" class="text-center">--}}
+                                                {{--                                                        Test2--}}
+                                                {{--                                                    </td>--}}
+                                                {{--                                                @else--}}
+                                                {{--                                                    <td style="background-color:red" class="text-center">--}}
+                                                {{--                                                        Test3--}}
+                                                {{--                                                    </td>--}}
+                                                {{--                                                @endif--}}
+                                                {{--                                            @else--}}
+                                                {{--                                                <td></td>--}}
+                                                {{--                                            @endif--}}
+                                                {{--                                        @endforeach--}}
+                                            </tr>
+                                        @endforeach
+                                    @endif
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
+                        <p style="color: black;">หมายเหตุ</p>
+                        <p style="color: #64864A">วันที่มีคุณสมบัติครบในการขอตำแหน่ง (ดึงข้อมูลวันที่บรรจุเป็นประจำ + 1ปี) เช่น วันที่บรรจุเป็นพนักงานประจำ 14 ก.ค. 2563 วันที่แสดงในช่องสีเขียว 14 ก.ค. 2564 (ต้องผ่านทดลองงานแล้ว จึงจะขอตำแหน่งได้)</p>
+                        <p style="color: #FFC700;">วันที่ใกล้ถึง การไม่ได้เลื่อนเงินเดือน แจ้งก่อนล่วงหน้า 1 ปี</p>
+                        <p style="color: #FF284B;">วันที่เริ่มต้น การไม่ได้เลื่อนเงินเดือน จนถึง วันเลิกจ้างเมื่อสิ้นสุดสีแดง (ดึงข้อมูลเริ่มตั้งแต่ วันที่บรรจุพนักงานมหาวิทยาลัยประจำ + 5 ปี ) และสิ้นสุดการจ้าง</p>
                     </div>
-                @endif
+                </div>
             </div>
         </div>
     </div>

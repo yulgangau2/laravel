@@ -1,21 +1,21 @@
-<div class="left main-sidebar">
+<div class="left main-sidebar" style="position: fixed">
 
     <div
-        style="position: fixed;overflow-x: hidden"
+        style="overflow-x: hidden"
         class="sidebar-inner leftscroll">
 
         <div id="sidebar-menu">
 
             <ul>
-                <li class="submenu">
-                    <a class="{{
-                        \Illuminate\Support\Facades\Route::currentRouteName() == 'index5'  ||
-                        \Illuminate\Support\Facades\Route::currentRouteName() == 'view'
-                    ? 'active' : '' }}"
-                       href="{{route('index5')}}"><i class="fa fa-fw fa-bookmark"></i>
-                        <span>ข้อมูลพนักงาน</span>
-                    </a>
-                </li>
+{{--                <li class="submenu">--}}
+{{--                    <a class="{{--}}
+{{--                        \Illuminate\Support\Facades\Route::currentRouteName() == 'index5'  ||--}}
+{{--                        \Illuminate\Support\Facades\Route::currentRouteName() == 'view'--}}
+{{--                    ? 'active' : '' }}"--}}
+{{--                       href="{{route('index5')}}"><i class="fa fa-fw fa-bookmark"></i>--}}
+{{--                        <span>ข้อมูลพนักงาน</span>--}}
+{{--                    </a>--}}
+{{--                </li>--}}
                 <li class="submenu">
                     <a class="{{
                         \Illuminate\Support\Facades\Route::currentRouteName() == 'index' ||
@@ -50,7 +50,7 @@
 {{--                </li>--}}
 
                 <li class="submenu">
-                    <a href="charts.html"><i class="fa fa-fw fa-long-arrow-left"></i>
+                    <a href="#"><i class="fa fa-fw fa-long-arrow-left"></i>
                         <span>ออกจากระบบ</span>
                     </a>
                 </li>
