@@ -145,9 +145,12 @@ class UpdateController extends Controller
                     $danger_colspan = null;
 
                     if ($row[3] == 'อาจารย์'){
-//            $start_red_at = \Carbon\Carbon::createFromFormat('d/m/y',$row[12])->addYears(543)->addDay()->format('d/m/Y');
-                        $end_red_at =  \Carbon\Carbon::createFromFormat('d/m/y',$row[12])->addYears(543)->addYears(2)->format('d/m/Y');
+///           $start_red_at = \Carbon\Carbon::createFromFormat('d/m/y',$row[12])->addYears(543)->addDay()->format('d/m/Y');
+//                        $end_red_at =  \Carbon\Carbon::createFromFormat('d/m/y',$row[12])->addYears(543)->addYears(2)->format('d/m/Y');
                         $danger_colspan = 2;
+                        $start_green = $row[6];
+                    }else{
+                        $start_green = $row[5];
                     }
 
 //        dd( $row,\Carbon\Carbon::createFromFormat('d/m/y',$row[7])->format('d/m/Y'));
@@ -156,16 +159,17 @@ class UpdateController extends Controller
                         'lastname' => $name[1],
                         'no' => $row[2],
                         'position' => $row[3],
-                        'first_day' => \Carbon\Carbon::createFromFormat('d/m/y',$row[5])->addYears(543)->format('d/m/Y'),
-                        'start_green_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[6])->addYears(543)->format('d/m/Y'),
-                        'end_green_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[9])->addYears(543)->format('d/m/Y'),
+                        'first_day' => \Carbon\Carbon::createFromFormat('d/m/y',$row[6])->addYears(543)->format('d/m/Y'),
+                        'start_green_at' => \Carbon\Carbon::createFromFormat('d/m/y',$start_green)->addYears(543)->format('d/m/Y'),
+                        //5 or 6
+                        'end_green_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[9])->subYear()->addYears(543)->format('d/m/Y'),
                         'safe_colspan' => $row[8],
-                        'start_yellow_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[11])->addYears(543)->format('d/m/Y'),
-                        'end_yellow_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[12])->addYears(543)->format('d/m/Y'),
+                        'start_yellow_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[9])->subYear()->addDay()->addYears(543)->format('d/m/Y'),
+                        'end_yellow_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[9])->addYears(543)->format('d/m/Y'),
                         'warning_colspan' => $row[10],
 
-                        'start_red_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[13])->addYears(543)->format('d/m/Y'),
-                        'end_red_at' =>  \Carbon\Carbon::createFromFormat('d/m/y',$row[12])->addYears(543)->addYears(2)->format('d/m/Y'),
+                        'start_red_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[11])->addYears(543)->format('d/m/Y'),
+                        'end_red_at' =>  \Carbon\Carbon::createFromFormat('d/m/y',$row[12])->addYears(543)->format('d/m/Y'),
                         'danger_colspan' => $danger_colspan,
 
 
@@ -173,6 +177,7 @@ class UpdateController extends Controller
 //            'leave_education' => $row[16],
 
                     ];
+//                    dd($row,$tmp);
                     $data[] = $tmp;
                     // Read the data
                 }
@@ -264,6 +269,7 @@ class UpdateController extends Controller
             ]);
         }
 
+        $nowYear = (int)Carbon::now()->format('Y');
         DB::beginTransaction();
         try {
             $emps = Employee::query()
@@ -289,49 +295,52 @@ class UpdateController extends Controller
                             ->where('ReferenceDocumentTypeNameTha', '=', $position['referenceDocumentTypeNameTha'])
                             ->first();
 
-                        if (!$his) {
-                            $his = new EmployeeHistoryWork();
-                        }
 
-
-                        $his->year = $year;
-                        $his->employee_id = $emp->id;
-                        $his->PositionName = $position['positionName'];
-                        $his->ReferenceDocumentTypeNameTha = $position['referenceDocumentTypeNameTha'];
-                        $his->EmployeeAssignDate = $position['employeeAssignDate'];
-
-                        if ($position['employeeEndDate'] && $position['employeeEndDate'] != '') {
-                            $his->EmployeeEndDate = $position['employeeEndDate'];
-                        }
-
-                        $his->CurrentSalaryRate = $position['currentSalaryRate'];
-                        $his->EmployeeTypeNameTha = $position['employeeTypeNameTha'];
-                        $his->OtherMoney = $position['otherMoney'];
-                        $his->Detail = $position['detail'];
-                        $his->OrganizationFullNameTha = $position['organizationFullNameTha'];
-                        $his->priority = $this->check_priority($position['positionName']);
-                        $his->year = (int)Carbon::createFromFormat('d/m/Y',$position['employeeAssignDate'])->format('Y');
-                        $his->save();
-
-                        if ($position['positionName'] == 'ศาสตราจารย์') {
-                            if ($check && $check == 'ศาสตราจารย์') {
-                                $ps = $position;
-                            } else if (!$check) {
-                                $check = 'ศาสตราจารย์';
+                        if ($year == $nowYear || !$his) {
+                            if (!$his) {
+                                $his = new EmployeeHistoryWork();
                             }
-                        } else if ($position['positionName'] == 'รองศาสตราจารย์') {
-                            if ($check && $check == 'รองศาสตราจารย์') {
-                                $ps = $position;
-                            } else if (!$check) {
-                                $check = 'รองศาสตราจารย์';
+
+                            $his->year = $year;
+                            $his->employee_id = $emp->id;
+                            $his->PositionName = $position['positionName'];
+                            $his->ReferenceDocumentTypeNameTha = $position['referenceDocumentTypeNameTha'];
+                            $his->EmployeeAssignDate = $position['employeeAssignDate'];
+
+                            if ($position['employeeEndDate'] && $position['employeeEndDate'] != '') {
+                                $his->EmployeeEndDate = $position['employeeEndDate'];
                             }
-                        } else if ($position['positionName'] == 'ผู้ช่วยศาสตราจารย์') {
-                            if ($check && $check == 'ผู้ช่วยศาสตราจารย์') {
-                                $ps = $position;
-                            } else if (!$check) {
-                                $ps = $position;
-                                $check = 'ผู้ช่วยศาสตราจารย์';
+
+                            $his->CurrentSalaryRate = $position['currentSalaryRate'];
+                            $his->EmployeeTypeNameTha = $position['employeeTypeNameTha'];
+                            $his->OtherMoney = $position['otherMoney'];
+                            $his->Detail = $position['detail'];
+                            $his->OrganizationFullNameTha = $position['organizationFullNameTha'];
+                            $his->priority = $this->check_priority($position['positionName']);
+                            $his->year = (int)Carbon::createFromFormat('d/m/Y',$position['employeeAssignDate'])->format('Y');
+                            $his->save();
+
+                            if ($position['positionName'] == 'ศาสตราจารย์') {
+                                if ($check && $check == 'ศาสตราจารย์') {
+                                    $ps = $position;
+                                } else if (!$check) {
+                                    $check = 'ศาสตราจารย์';
+                                }
+                            } else if ($position['positionName'] == 'รองศาสตราจารย์') {
+                                if ($check && $check == 'รองศาสตราจารย์') {
+                                    $ps = $position;
+                                } else if (!$check) {
+                                    $check = 'รองศาสตราจารย์';
+                                }
+                            } else if ($position['positionName'] == 'ผู้ช่วยศาสตราจารย์') {
+                                if ($check && $check == 'ผู้ช่วยศาสตราจารย์') {
+                                    $ps = $position;
+                                } else if (!$check) {
+                                    $ps = $position;
+                                    $check = 'ผู้ช่วยศาสตราจารย์';
+                                }
                             }
+
                         }
 
                     }
@@ -415,6 +424,7 @@ class UpdateController extends Controller
                                 $empPosition->save();
                             }
                         }else{
+
                             if ($his->ReferenceDocumentTypeNameTha == 'เปลี่ยนตำแหน่ง'){
                                 $empPosition->year = $year;
                                 $empPosition->employee_id = $emp->id;
@@ -563,8 +573,6 @@ class UpdateController extends Controller
                             $empHrPosition->save();
                         }
                     }
-
-
                 }
             }
 
@@ -584,8 +592,7 @@ class UpdateController extends Controller
     }
 
 
-    public
-    function update_personal_info(Request $request)
+    public function update_personal_info(Request $request)
     {
         ini_set('max_execution_time', '1200');
 
@@ -865,14 +872,8 @@ class UpdateController extends Controller
 
                         }
                     }
+
                     DB::commit();
-
-
-
-                    return redirect()->back()->with([
-                        'success' => false,
-                        'message' => 'อัพเดทข้อมูลสำเร็จ'
-                    ]);
                 } catch (\Exception $exception) {
                     DB::rollBack();
                     return redirect()->back()->withErrors([
@@ -881,8 +882,15 @@ class UpdateController extends Controller
                     ]);
                 }
 
+
+
             }
         }
+
+        return redirect()->back()->with([
+            'success' => false,
+            'message' => 'อัพเดทข้อมูลสำเร็จ'
+        ]);
     }
 
     public function update_employee_executive(Request $request)
