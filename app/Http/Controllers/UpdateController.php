@@ -533,74 +533,75 @@ class UpdateController extends Controller
                 $emailCmu = $emp->EmailCMU;
                 $json = $this->getData("https://mis-api.cmu.ac.th/hr/v2.2/employees/workcurrentinfo", $orgId, $perId, $token);
 
-                if (isset($json['workStatusNameTha']) && $json['workStatusNameTha'] == 'ทำงานปกติ') {
-                    if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
-                        $emp->HrPositionNumber = $json['hrPositionNumber'];
-                    }
-
-                    if (isset($json['currentSalaryRate']) && $json['currentSalaryRate']) {
-                        $emp->CurrentSalaryRate = $json['currentSalaryRate'];
-                    }
-
-                    if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
-                        $type = strpos($json['hrPositionNumber'], 'EP') !== false ? 'เชิงรุก' : 'พันธกิิจ';
-                        $emp->Type = $type;
-
-                    }
-                    if ($json['positionNameTha'] == 'อาจารย์' || $json['positionNameTha'] == 'ผู้ช่วยศาสตราจารย์' || $json['positionNameTha'] == 'รองศาสตราจารย์' || $json['positionNameTha'] == 'ศาสตราจารย์') {
-                        $emp->TypeEmployee = 'อาจารย์';
-                    } else {
-                        $emp->TypeEmployee = "พนักงาน";
-                    }
-                    $emp->WorkStatusNameTha = 'ทำงานปกติ';
-                    $emp->save();
-
-                } else {
-                    if (!$emp->WorkStatusNameTha && !$emp->ExitDate) {
-                        $emp->WorkStatusNameTha = 'ออกจากการทำงาน';
-                        $emp->ExitDate = Carbon::now()->addYears(543)->format('d/m/Y');
-                        $emp->save();
-                    }
-
-                }
-
-                $nowYear = (int)Carbon::now()->addYears(543)->format('Y');
-                $firstYear = (int)Carbon::createFromFormat('d/m/Y',$json['inDate'])->format('Y');
-
-                for ($year = $nowYear;$year>=$firstYear;$year--){
-                    $empHrPosition = EmployeeHrPosition::query()
-                        ->where('year',$year)
-                        ->where('employee_id',$emp->id)
-                        ->first();
-
-                    if (!$empHrPosition){
-                        $empHrPosition = new EmployeeHrPosition();
-                        $empHrPosition->year = $year;
-                        $empHrPosition->employee_id = $emp->id;
-                        if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
-                            $type = strpos($json['hrPositionNumber'], 'EP') !== false ? 'เชิงรุก' : 'พันธกิิจ';
-                            $empHrPosition->hrPositionNumber = $json['hrPositionNumber'];
-                            $empHrPosition->Type = $type;
-                        }
-                        $empHrPosition->save();
-                    }else{
-                        // Update Only Now Mont
-                        if ($year == $nowYear){
-                            $empHrPosition->year = $year;
-                            $empHrPosition->employee_id = $emp->id;
-                            if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
-                                $type = strpos($json['hrPositionNumber'], 'EP') !== false ? 'เชิงรุก' : 'พันธกิิจ';
-                                $empHrPosition->hrPositionNumber = $json['hrPositionNumber'];
-                                $empHrPosition->Type = $type;
-                            }
-                            $empHrPosition->save();
-                        }
-                    }
-                }
-                if ($i == 60){
-                    dd(5555);
-                }
+//                if (isset($json['workStatusNameTha']) && $json['workStatusNameTha'] == 'ทำงานปกติ') {
+//                    if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
+//                        $emp->HrPositionNumber = $json['hrPositionNumber'];
+//                    }
+//
+//                    if (isset($json['currentSalaryRate']) && $json['currentSalaryRate']) {
+//                        $emp->CurrentSalaryRate = $json['currentSalaryRate'];
+//                    }
+//
+//                    if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
+//                        $type = strpos($json['hrPositionNumber'], 'EP') !== false ? 'เชิงรุก' : 'พันธกิิจ';
+//                        $emp->Type = $type;
+//
+//                    }
+//                    if ($json['positionNameTha'] == 'อาจารย์' || $json['positionNameTha'] == 'ผู้ช่วยศาสตราจารย์' || $json['positionNameTha'] == 'รองศาสตราจารย์' || $json['positionNameTha'] == 'ศาสตราจารย์') {
+//                        $emp->TypeEmployee = 'อาจารย์';
+//                    } else {
+//                        $emp->TypeEmployee = "พนักงาน";
+//                    }
+//                    $emp->WorkStatusNameTha = 'ทำงานปกติ';
+//                    $emp->save();
+//
+//                } else {
+//                    if (!$emp->WorkStatusNameTha && !$emp->ExitDate) {
+//                        $emp->WorkStatusNameTha = 'ออกจากการทำงาน';
+//                        $emp->ExitDate = Carbon::now()->addYears(543)->format('d/m/Y');
+//                        $emp->save();
+//                    }
+//
+//                }
+//
+//                $nowYear = (int)Carbon::now()->addYears(543)->format('Y');
+//                $firstYear = (int)Carbon::createFromFormat('d/m/Y',$json['inDate'])->format('Y');
+//
+//                for ($year = $nowYear;$year>=$firstYear;$year--){
+//                    $empHrPosition = EmployeeHrPosition::query()
+//                        ->where('year',$year)
+//                        ->where('employee_id',$emp->id)
+//                        ->first();
+//
+//                    if (!$empHrPosition){
+//                        $empHrPosition = new EmployeeHrPosition();
+//                        $empHrPosition->year = $year;
+//                        $empHrPosition->employee_id = $emp->id;
+//                        if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
+//                            $type = strpos($json['hrPositionNumber'], 'EP') !== false ? 'เชิงรุก' : 'พันธกิิจ';
+//                            $empHrPosition->hrPositionNumber = $json['hrPositionNumber'];
+//                            $empHrPosition->Type = $type;
+//                        }
+//                        $empHrPosition->save();
+//                    }else{
+//                        // Update Only Now Mont
+//                        if ($year == $nowYear){
+//                            $empHrPosition->year = $year;
+//                            $empHrPosition->employee_id = $emp->id;
+//                            if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
+//                                $type = strpos($json['hrPositionNumber'], 'EP') !== false ? 'เชิงรุก' : 'พันธกิิจ';
+//                                $empHrPosition->hrPositionNumber = $json['hrPositionNumber'];
+//                                $empHrPosition->Type = $type;
+//                            }
+//                            $empHrPosition->save();
+//                        }
+//                    }
+//                }
+//                if ($i == 40){
+//                    dd(5555);
+//                }
             }
+            dd(2222);
 
             $update = NowUpdate::query()
                 ->where('name','=','work_current')
