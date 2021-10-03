@@ -86,7 +86,9 @@
                                 <td>
                                     <form action="{{route('update_work_current_info')}}" method="get">
                                         {{csrf_field()}}
-                                        <button class="btn" type="button" onclick="update_work_current_info()">อัพเดทการทำงานปัจจุบัน</button>
+                                        <button class="btn" type="button" onclick="update_work_current_info()">
+                                            อัพเดทการทำงานปัจจุบัน
+                                        </button>
                                     </form>
                                 </td>
                                 <td>
@@ -169,17 +171,33 @@
 
 @section('script')
     <script>
+        var perIds = [];
+        var data = [];
+        @if(count($personal_ids) > 0)
+            @foreach($personal_ids as $i=> $perId)
+               perIds.push("{{$perId}}")
+            @endforeach
+        @endif
 
-        $.ajaxSetup({
-            beforeSend: function(xhr) {
-                xhr.setRequestHeader('custom-header', 'some value');
-            }
-        });
 
         function update_work_current_info(){
+            console.log(perIds,33333)
+            for (var i = 0; i < perIds.length; i++) {
+                getData("https://mis-api.cmu.ac.th/hr/v2.2/employees/workcurrentinfo", perIds[i], 'rVhfqgcZTwZXrKDFyHuNPAeMHNWZZ46j');
+            }
+        }
+
+        function getData(url, perId, token) {
+            $.ajaxSetup({
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('orgid', '0000000021');
+                    xhr.setRequestHeader('personalid', perId);
+                    xhr.setRequestHeader('Authorization', 'Bearer '+token);
+                }
+            });
             $.ajax({
-                url: "{{route('api_update_work_current_info')}}",
-                method : "post"
+                url: url,
+                method: "get"
             });
         }
     </script>

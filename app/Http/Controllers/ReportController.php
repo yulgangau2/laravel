@@ -1181,7 +1181,8 @@ class ReportController extends Controller
     public function setting()
     {
 
-        $updates = NowUpdate::query()->get();
+        $personal_ids = Employee::query()->pluck('PersonalID');
+
         $layoff = NowUpdate::query()->where('name','layoff')->first();
 
         $employee = NowUpdate::query()->where('name','employee')->first();
@@ -1209,6 +1210,7 @@ class ReportController extends Controller
             'leave_education' => $leave_education,
             'employee_address' => $employee_address,
             'employee_fame' => $employee_fame,
+            'personal_ids' => $personal_ids
 
         ]);
     }
