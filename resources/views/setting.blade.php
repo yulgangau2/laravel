@@ -191,7 +191,7 @@
                     timeout:0,
                     method: "post"
                 }).done(function(response) {
-                    if (response.data.perid == perIds[perIds.length-1]) {
+                    if (response.data && response.data.perid == perIds[perIds.length-1]) {
                         if (response.data.success) {
                             alert("success");
                         }
