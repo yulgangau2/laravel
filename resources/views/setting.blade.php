@@ -179,24 +179,29 @@
             @endforeach
         @endif
 
-
-        function update_work_current_info(){
-            for (var i = 0; i < perIds.length; i++) {
+        function task(perId) {
+            setTimeout(function() {
                 $.ajax({
                     data : {
-                      'perId' : perIds[i]
+                        'perId' : perId
                     },
                     url: "{{route('api_update_work_current_info')}}",
                     encoding :'',
                     timeout:0,
                     method: "post"
                 }).done(function(response) {
-                    if (response.data && response.data.perid == perIds[perIds.length-1]) {
+                    if (response.data && response.data.perId == perId) {
                         if (response.data.success) {
                             alert("success");
                         }
                     }
                 })
+            }, 10);
+        }
+
+        function update_work_current_info(){
+            for (var i = 0; i < perIds.length; i++) {
+                task(perIds[i])
             }
         }
 

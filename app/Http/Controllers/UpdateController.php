@@ -617,6 +617,7 @@ class UpdateController extends Controller
             DB::commit();
             return response()->json([
                 'message' => 'สำเร็จ',
+                'perId' => $perId,
                 'success' => true
             ]);
 //            return redirect()->back()->with([
