@@ -94,19 +94,25 @@
                                 <td>
                                     <form action="{{route('update_personal_info')}}" method="get">
                                         {{csrf_field()}}
-                                        <button class="btn" type="submit">อัพเดทข้อมูลส่วนบุคคล</button>
+                                        <button class="btn" type="button"
+                                                onclick="update_personal_info()"
+                                        >อัพเดทข้อมูลส่วนบุคคล</button>
                                     </form>
                                 </td>
                                 <td>
                                     <form action="{{route('update_history_worker')}}" method="get">
                                         {{csrf_field()}}
-                                        <button class="btn" type="submit">อัพเดทประวัติการทำงาน</button>
+                                        <button class="btn" type="button"
+                                                onclick="update_history_work()"
+                                        >อัพเดทประวัติการทำงาน</button>
                                     </form>
                                 </td>
                                 <td>
                                     <form action="{{route('update_employee_education')}}" method="get">
                                         {{csrf_field()}}
-                                        <button class="btn" type="submit">อัพเดทประวัติการศึกษา</button>
+                                        <button class="btn" type="button"
+                                                onclick="update_history_education()"
+                                        >อัพเดทประวัติการศึกษา</button>
                                     </form>
                                 </td>
                             </tr>
@@ -179,39 +185,58 @@
         @endforeach
         @endif
 
-        const sleep = (milliseconds) => {
-            return new Promise(resolve => setTimeout(resolve, milliseconds))
-        }
-
-
-        function task(perId) {
-            $.ajax({
-                data: {
-                    'perId': perId
-                },
-                url: "{{route('api_update_work_current_info')}}",
-                encoding: '',
-                timeout: 0,
-                method: "post"
-            }).done(function (response) {
-                if (response.data && response.data.perId == perId) {
-                    if (response.data.success) {
-                        alert("success");
-                    }
-                }
-            })
-
-        }
-
 
         function waitforme(ms)  {
             return new Promise( resolve => { setTimeout(resolve, ms); });
         }
 
+        function task(url,perId) {
+            $.ajax({
+                data: {
+                    'perId': perId
+                },
+                url: url,
+                encoding: '',
+                timeout: 0,
+                method: "post"
+            }).done(function (response) {
+                /*if (response.data && response.data.perId == perId) {
+                    if (response.data.success) {
+                        alert("success");
+                    }
+                }*/
+            })
+
+        }
+
 
         async function update_work_current_info() {
             for (var i = 0; i < perIds.length; i++) {
-                task(perIds[i])
+                task("{{route('api_update_work_current_info')}}",perIds[i])
+                await waitforme(4000);
+            }
+            alert("อัพเดทข้อมูลสำเร็จ")
+        }
+
+        async function update_personal_info() {
+            for (var i = 0; i < perIds.length; i++) {
+                task("{{route('api_update_personal_info')}}",perIds[i])
+                await waitforme(4000);
+            }
+            alert("อัพเดทข้อมูลสำเร็จ")
+        }
+
+        async function update_history_work() {
+            for (var i = 0; i < perIds.length; i++) {
+                task("{{route('api_update_history_worker')}}",perIds[i])
+                await waitforme(4000);
+            }
+            alert("อัพเดทข้อมูลสำเร็จ")
+        }
+
+        async function update_history_education() {
+            for (var i = 0; i < perIds.length; i++) {
+                task("{{route('api_update_employee_education')}}",perIds[i])
                 await waitforme(4000);
             }
             alert("อัพเดทข้อมูลสำเร็จ")

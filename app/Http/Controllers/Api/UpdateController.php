@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\ApiController;
 use App\Education;
@@ -12,14 +12,35 @@ use App\EmployeeHrPosition;
 use App\EmployeeLeaveEducation;
 use App\EmployeePositionHistory;
 use App\Executive;
+use App\Http\Controllers\Controller;
 use App\NowUpdate;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class UpdateController extends Controller
 {
+    const client_id = 'YR1g9sYHb7ZKnfZwPankGdGDcs5xaxqE6znv3rMq';
+    const client_secret = 'raxf9NGvBy2HgfqVhydTwAGQTuPY4DDyA85FSAEB';
+
+    const scope = 'cmuitaccount.all.basicinfo cmuitaccount.all.employee.member mishr.all.basicinfo mishr.0000000021.education mishr.0000000021.executive mishr.0000000021.fame mishr.0000000021.leaveeducation mishr.0000000021.leavehistory mishr.0000000021.personalinfo mishr.0000000021.workhistory';
+    const url_access_token = 'https://oauth.cmu.ac.th/v1/GetToken.aspx';
+
+    const url = 'https://mis-api.cmu.ac.th/hr/';
+
+    const version2 = 'v2/';
+    const version_1 = 'v2.1/';
+    const version_2 = 'v2.2/';
+
+    const personalInfo = 'employees/self/personalinfo';
+    const basicInfo = 'employees/self/basicinfo';
+    const workStatus = 'employees/self/workcurrentinfo';
+//    const workStatus = 'employees/self/personalkeyinfo';
+    const addressInfo = 'employees/self/personalkeyinfo';
+
+//    const addressInfo = 'organizations/{_orgID}/employees/{_itAccount}/leavequota';
+
+
     public function getALlEmployee($orgId, $token)
     {
 
@@ -103,18 +124,17 @@ class UpdateController extends Controller
     }
 
 
-
-
-    public function check_priority($position){
+    public function check_priority($position)
+    {
 
         $priority = 99;
-        if ($position == 'ศาสตราจารย์'){
+        if ($position == 'ศาสตราจารย์') {
             $priority = 1;
-        }else if ($position == 'รองศาสตราจารย์'){
+        } else if ($position == 'รองศาสตราจารย์') {
             $priority = 2;
-        }else if ($position == 'ผู้ช่วยศาสตราจารย์'){
+        } else if ($position == 'ผู้ช่วยศาสตราจารย์') {
             $priority = 3;
-        }else if ($position == 'อาจารย์'){
+        } else if ($position == 'อาจารย์') {
             $priority = 4;
         }
 
@@ -122,87 +142,166 @@ class UpdateController extends Controller
 
     }
 
-    public function upload_layoff(Request $request){
-        ini_set('max_execution_time', '1200');
 
-        $file = $request->file('layoff');
-        DB::beginTransaction();
-        try{
-            if ($file){
-                \Illuminate\Support\Facades\DB::table('lay_offs')->delete();
-                $path = Storage::putFile('public', $file);
-                $open = fopen('storage/'.basename($path), "r");
-//
-                $data =[];
-                while (($row = fgetcsv($open, 1000, ",")) !== FALSE)
-                {
-                    if ($row[0] == "" || $row[1] == ""){
-                        continue;
-                    }
-                    $name = explode("\n",$row[1]);
-
-                    $start_red_at = null;
-                    $end_red_at = null;
-                    $danger_colspan = null;
-
-                    if ($row[3] == 'อาจารย์'){
-///           $start_red_at = \Carbon\Carbon::createFromFormat('d/m/y',$row[12])->addYears(543)->addDay()->format('d/m/Y');
-//                        $end_red_at =  \Carbon\Carbon::createFromFormat('d/m/y',$row[12])->addYears(543)->addYears(2)->format('d/m/Y');
-                        $danger_colspan = 2;
-                        $start_green = $row[6];
-                    }else{
-                        $start_green = $row[5];
-                    }
-
-//        dd( $row,\Carbon\Carbon::createFromFormat('d/m/y',$row[7])->format('d/m/Y'));
-                    $tmp = [
-                        'firstname' => $name[0],
-                        'lastname' => $name[1],
-                        'no' => $row[2],
-                        'position' => $row[3],
-                        'first_day' => \Carbon\Carbon::createFromFormat('d/m/y',$row[6])->addYears(543)->format('d/m/Y'),
-                        'start_green_at' => \Carbon\Carbon::createFromFormat('d/m/y',$start_green)->addYears(543)->format('d/m/Y'),
-                        //5 or 6
-                        'end_green_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[9])->subYear()->addYears(543)->format('d/m/Y'),
-                        'safe_colspan' => $row[8],
-                        'start_yellow_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[9])->subYear()->addDay()->addYears(543)->format('d/m/Y'),
-                        'end_yellow_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[9])->addYears(543)->format('d/m/Y'),
-                        'warning_colspan' => $row[10],
-
-                        'start_red_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[11])->addYears(543)->format('d/m/Y'),
-                        'end_red_at' =>  \Carbon\Carbon::createFromFormat('d/m/y',$row[12])->addYears(543)->format('d/m/Y'),
-                        'danger_colspan' => $danger_colspan,
-                        'exit_at' =>  \Carbon\Carbon::createFromFormat('d/m/y',$row[13])->addYears(543)->format('d/m/Y'),
-
-
-//            'test8' => $row[15],
-//            'leave_education' => $row[16],
-
-                    ];
-//                    dd($row,$tmp);
-                    $data[] = $tmp;
-                    // Read the data
-                }
-
-                fclose($open);
-                unlink('storage/'.basename($path));
-                \Illuminate\Support\Facades\DB::table('lay_offs')->insert($data);
-            }
-            DB::commit();
-            return redirect()->back()->with([
-                'success' => true,
-                'message' => "อัพโหลดข้อมูลสำเร็จ"
-            ]);
-        }catch (\Exception $exception){
-            DB::rollBack();
-            return redirect()->back()->withErrors([
-                'success' => false,
-                'message' => $exception->getMessage()
-            ]);
-        }
+    public function __constructor()
+    {
 
 
     }
+
+    public function getAccessToken($token)
+    {
+        $authorization = base64_encode(self::client_id . ":" . self::client_secret);
+
+        //base64_encode(ClientKey:SecretKey)
+
+
+        $json_string = self::scope;
+//        $json_string = "grant_type=client_credentials&scope=research.public research.0000000021";
+
+
+        $ch = curl_init(url_access_token);
+
+        $options = array(
+
+            CURLOPT_RETURNTRANSFER => true,
+
+            CURLOPT_SSL_VERIFYPEER => false,
+
+            CURLOPT_HTTPHEADER => array(
+
+                "content-type: application/x-www-form-urlencoded",
+
+                "Authorization: Basic $authorization",
+
+            ),
+
+            CURLOPT_POSTFIELDS => $json_string
+
+        );
+
+
+        curl_setopt_array($ch, $options);
+
+        $result = curl_exec($ch); // Getting jSON result string
+
+
+        $obj = json_decode($result, true);
+
+
+        $token = $obj['access_token'];
+
+
+        return $token;
+
+    }
+
+    public function getPersonalInfo($token)
+    {
+        $curl = curl_init();
+
+        $url = self::url . self::version_2 . self::personalInfo;
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => array(
+                "orgid: 0000000043",
+                "personalid: 3215487512698",
+                "Authorization: Bearer cdfe676c3f6930e109617a1d2af274d28a0405b0"
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        echo $response;
+    }
+
+    public function getToken($scope)
+    {
+
+//        $authorization = base64_encode("YR1g9sYHb7ZKnfZwPankGdGDcs5xaxqE6znv3rMq:raxf9NGvBy2HgfqVhydTwAGQTuPY4DDyA85FSAEB");
+//
+//
+//        $json_url = 'https://oauth.cmu.ac.th/v1/GetToken.aspx';
+//
+////old
+////$json_string = "grant_type=client_credentials&scope=research.public research.0000000021";
+//
+////new
+////$json_string = "grant_type=client_credentials&scope=cmuitaccount.all.basicinfo&mishr.0000000021.executive&cmuitaccount.all.employee.member&mishr.all.basicinfo&mishr.0000000021.education&mishr.0000000021.fame&mishr.0000000021.leaveeducation&mishr.0000000021.leavehistory&mishr.0000000021.personalinfo&mishr.0000000021.workhistory";
+//
+////        $scope = $request->get('scope');
+//
+//
+//        $json_string = "grant_type=client_credentials&scope=".$scope;
+//
+//
+//
+//        $ch = curl_init( $json_url);
+//
+//        $options = array(
+//
+//            CURLOPT_RETURNTRANSFER => true,
+//
+//            CURLOPT_SSL_VERIFYPEER=>false,
+//
+//            CURLOPT_HTTPHEADER => array(
+//
+//                "content-type: application/x-www-form-urlencoded",
+//
+//                "Authorization: Basic $authorization",
+//
+//            ),
+//
+//            CURLOPT_POSTFIELDS => $json_string
+//
+//        );
+//
+//
+//
+//        curl_setopt_array( $ch, $options );
+//
+//        $result = curl_exec($ch); // Getting jSON result string
+//
+//
+//
+//        $obj=json_decode($result,true);
+//
+//        $token =  $obj['access_token'];
+//        return $token;
+        $curl = curl_init();
+
+        $url = 'https://smartreport.camt.cmu.ac.th/public/api/get_token/?scope=' . $scope;
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+//            CURLOPT_HTTPHEADER => array(
+//                "orgid: 0000000043",
+//                "personalid: 3215487512698",
+//                "Authorization: Bearer cdfe676c3f6930e109617a1d2af274d28a0405b0"
+//            ),
+        ));
+
+        $token = curl_exec($curl);
+
+        curl_close($curl);
+        return $token;
+    }
+
+
     public function update_employee(Request $request)
     {
         ini_set('max_execution_time', '1200');
@@ -239,10 +338,8 @@ class UpdateController extends Controller
             }
 
 
-
-
             $update = NowUpdate::query()
-                ->where('name','=','employee')
+                ->where('name', '=', 'employee')
                 ->first();
             if (!$update) {
                 $update = new NowUpdate();
@@ -286,11 +383,13 @@ class UpdateController extends Controller
         $nowYear = (int)Carbon::now()->format('Y');
         DB::beginTransaction();
         try {
-            $emps = Employee::query()
-                ->get();
+//            $emps = Employee::query()
+//                ->get();
 
 
-            foreach ($emps as $i => $emp) {
+//            foreach ($emps as $i => $emp) {
+            $perId = $request->get('perId');
+            $emp = Employee::query()->where('PersonalID', $perId)->first();
                 $perId = $emp->PersonalID;
                 $emailCmu = $emp->EmailCMU;
 //                $json = $this->getEmployeeWorker($perId, $orgId, $token);
@@ -331,7 +430,7 @@ class UpdateController extends Controller
                             $his->Detail = $position['detail'];
                             $his->OrganizationFullNameTha = $position['organizationFullNameTha'];
                             $his->priority = $this->check_priority($position['positionName']);
-                            $his->year = (int)Carbon::createFromFormat('d/m/Y',$position['employeeAssignDate'])->format('Y');
+                            $his->year = (int)Carbon::createFromFormat('d/m/Y', $position['employeeAssignDate'])->format('Y');
                             $his->save();
 
                             if ($position['positionName'] == 'ศาสตราจารย์') {
@@ -372,20 +471,20 @@ class UpdateController extends Controller
                     }
 
                     $empHistories = EmployeeHistoryWork::query()
-                        ->where('employee_id',$emp->id)
-                        ->orderBy('year','ASC')
-                        ->orderBy('priority','ASC')
+                        ->where('employee_id', $emp->id)
+                        ->orderBy('year', 'ASC')
+                        ->orderBy('priority', 'ASC')
                         ->get()
                         ->groupBy('year');
 
                     $old = null;
 
 //                    dd($empHistories);
-                    foreach ($empHistories as $year =>$h){
+                    foreach ($empHistories as $year => $h) {
                         $his = $h[0];
 
-                        foreach ($h  as $c => $p){
-                            if ($p->ReferenceDocumentTypeNameTha == 'เปลี่ยนตำแหน่ง'){
+                        foreach ($h as $c => $p) {
+                            if ($p->ReferenceDocumentTypeNameTha == 'เปลี่ยนตำแหน่ง') {
                                 $his = $p;
                                 break;
                             }
@@ -398,9 +497,8 @@ class UpdateController extends Controller
                             ->first();
 
 
-
                         if (!$empPosition) {
-                            if ($old && $his->ReferenceDocumentTypeNameTha != 'เปลี่ยนตำแหน่ง'){
+                            if ($old && $his->ReferenceDocumentTypeNameTha != 'เปลี่ยนตำแหน่ง') {
                                 $empPosition = new EmployeePositionHistory();
                                 $empPosition->year = $year;
                                 $empPosition->employee_id = $emp->id;
@@ -418,7 +516,7 @@ class UpdateController extends Controller
                                 $empPosition->Detail = $old->Detail;
                                 $empPosition->OrganizationFullNameTha = $old->OrganizationFullNameTha;
                                 $empPosition->save();
-                            }else if (!$old || $his->ReferenceDocumentTypeNameTha == 'เปลี่ยนตำแหน่ง'){
+                            } else if (!$old || $his->ReferenceDocumentTypeNameTha == 'เปลี่ยนตำแหน่ง') {
                                 $empPosition = new EmployeePositionHistory();
                                 $empPosition->year = $year;
                                 $empPosition->employee_id = $emp->id;
@@ -437,9 +535,9 @@ class UpdateController extends Controller
                                 $empPosition->OrganizationFullNameTha = $his->OrganizationFullNameTha;
                                 $empPosition->save();
                             }
-                        }else{
+                        } else {
 
-                            if ($his->ReferenceDocumentTypeNameTha == 'เปลี่ยนตำแหน่ง'){
+                            if ($his->ReferenceDocumentTypeNameTha == 'เปลี่ยนตำแหน่ง') {
                                 $empPosition->year = $year;
                                 $empPosition->employee_id = $emp->id;
                                 $empPosition->PositionName = $his->PositionName;
@@ -456,7 +554,7 @@ class UpdateController extends Controller
                                 $empPosition->Detail = $his->Detail;
                                 $empPosition->OrganizationFullNameTha = $his->OrganizationFullNameTha;
                                 $empPosition->save();
-                            }else if ($his->EmployeeTypeNameTha == 'พนักงานมหาวิทยาลัยประจำ' && $empPosition->EmployeeTypeNameTha != "พนักงานมหาวิทยาลัยประจำ"){
+                            } else if ($his->EmployeeTypeNameTha == 'พนักงานมหาวิทยาลัยประจำ' && $empPosition->EmployeeTypeNameTha != "พนักงานมหาวิทยาลัยประจำ") {
                                 $empPosition->year = $year;
                                 $empPosition->employee_id = $emp->id;
                                 $empPosition->PositionName = $his->PositionName;
@@ -479,10 +577,10 @@ class UpdateController extends Controller
                         $old = $his;
                     }
                 }
-            }
+//            }
 
             $update = NowUpdate::query()
-                ->where('name','=','history_work')
+                ->where('name', '=', 'history_work')
                 ->first();
             if (!$update) {
                 $update = new NowUpdate();
@@ -529,56 +627,68 @@ class UpdateController extends Controller
 
         DB::beginTransaction();
         try {
-            $emps = Employee::query()
-                ->get();
+//            $emps = Employee::query()
+//                ->get();
+            $perId = $request->get('perId');
+            $emp = Employee::query()->where('PersonalID', $perId)->first();
+//            foreach ($emps as $i => $emp) {
+            $perId = $emp->PersonalID;
+            $emailCmu = $emp->EmailCMU;
+            $json = $this->getData("https://mis-api.cmu.ac.th/hr/v2.2/employees/workcurrentinfo", $orgId, $perId, $token);
 
-            foreach ($emps as $i => $emp) {
-                $perId = $emp->PersonalID;
-                $emailCmu = $emp->EmailCMU;
-                $json = $this->getData("https://mis-api.cmu.ac.th/hr/v2.2/employees/workcurrentinfo", $orgId, $perId, $token);
-
-                if (isset($json['workStatusNameTha']) && $json['workStatusNameTha'] == 'ทำงานปกติ') {
-                    if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
-                        $emp->HrPositionNumber = $json['hrPositionNumber'];
-                    }
-
-                    if (isset($json['currentSalaryRate']) && $json['currentSalaryRate']) {
-                        $emp->CurrentSalaryRate = $json['currentSalaryRate'];
-                    }
-
-                    if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
-                        $type = strpos($json['hrPositionNumber'], 'EP') !== false ? 'เชิงรุก' : 'พันธกิิจ';
-                        $emp->Type = $type;
-
-                    }
-                    if ($json['positionNameTha'] == 'อาจารย์' || $json['positionNameTha'] == 'ผู้ช่วยศาสตราจารย์' || $json['positionNameTha'] == 'รองศาสตราจารย์' || $json['positionNameTha'] == 'ศาสตราจารย์') {
-                        $emp->TypeEmployee = 'อาจารย์';
-                    } else {
-                        $emp->TypeEmployee = "พนักงาน";
-                    }
-                    $emp->WorkStatusNameTha = 'ทำงานปกติ';
-                    $emp->save();
-
-                } else {
-                    if (!$emp->WorkStatusNameTha && !$emp->ExitDate) {
-                        $emp->WorkStatusNameTha = 'ออกจากการทำงาน';
-                        $emp->ExitDate = Carbon::now()->addYears(543)->format('d/m/Y');
-                        $emp->save();
-                    }
-
+            if (isset($json['workStatusNameTha']) && $json['workStatusNameTha'] == 'ทำงานปกติ') {
+                if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
+                    $emp->HrPositionNumber = $json['hrPositionNumber'];
                 }
 
-                $nowYear = (int)Carbon::now()->addYears(543)->format('Y');
-                $firstYear = (int)Carbon::createFromFormat('d/m/Y',$json['inDate'])->format('Y');
+                if (isset($json['currentSalaryRate']) && $json['currentSalaryRate']) {
+                    $emp->CurrentSalaryRate = $json['currentSalaryRate'];
+                }
 
-                for ($year = $nowYear;$year>=$firstYear;$year--){
-                    $empHrPosition = EmployeeHrPosition::query()
-                        ->where('year',$year)
-                        ->where('employee_id',$emp->id)
-                        ->first();
+                if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
+                    $type = strpos($json['hrPositionNumber'], 'EP') !== false ? 'เชิงรุก' : 'พันธกิิจ';
+                    $emp->Type = $type;
 
-                    if (!$empHrPosition){
-                        $empHrPosition = new EmployeeHrPosition();
+                }
+                if ($json['positionNameTha'] == 'อาจารย์' || $json['positionNameTha'] == 'ผู้ช่วยศาสตราจารย์' || $json['positionNameTha'] == 'รองศาสตราจารย์' || $json['positionNameTha'] == 'ศาสตราจารย์') {
+                    $emp->TypeEmployee = 'อาจารย์';
+                } else {
+                    $emp->TypeEmployee = "พนักงาน";
+                }
+                $emp->WorkStatusNameTha = 'ทำงานปกติ';
+                $emp->save();
+
+            } else {
+                if (!$emp->WorkStatusNameTha && !$emp->ExitDate) {
+                    $emp->WorkStatusNameTha = 'ออกจากการทำงาน';
+                    $emp->ExitDate = Carbon::now()->addYears(543)->format('d/m/Y');
+                    $emp->save();
+                }
+
+            }
+
+            $nowYear = (int)Carbon::now()->addYears(543)->format('Y');
+            $firstYear = (int)Carbon::createFromFormat('d/m/Y', $json['inDate'])->format('Y');
+
+            for ($year = $nowYear; $year >= $firstYear; $year--) {
+                $empHrPosition = EmployeeHrPosition::query()
+                    ->where('year', $year)
+                    ->where('employee_id', $emp->id)
+                    ->first();
+
+                if (!$empHrPosition) {
+                    $empHrPosition = new EmployeeHrPosition();
+                    $empHrPosition->year = $year;
+                    $empHrPosition->employee_id = $emp->id;
+                    if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
+                        $type = strpos($json['hrPositionNumber'], 'EP') !== false ? 'เชิงรุก' : 'พันธกิิจ';
+                        $empHrPosition->hrPositionNumber = $json['hrPositionNumber'];
+                        $empHrPosition->Type = $type;
+                    }
+                    $empHrPosition->save();
+                } else {
+                    // Update Only Now Mont
+                    if ($year == $nowYear) {
                         $empHrPosition->year = $year;
                         $empHrPosition->employee_id = $emp->id;
                         if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
@@ -587,24 +697,13 @@ class UpdateController extends Controller
                             $empHrPosition->Type = $type;
                         }
                         $empHrPosition->save();
-                    }else{
-                        // Update Only Now Mont
-                        if ($year == $nowYear){
-                            $empHrPosition->year = $year;
-                            $empHrPosition->employee_id = $emp->id;
-                            if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
-                                $type = strpos($json['hrPositionNumber'], 'EP') !== false ? 'เชิงรุก' : 'พันธกิิจ';
-                                $empHrPosition->hrPositionNumber = $json['hrPositionNumber'];
-                                $empHrPosition->Type = $type;
-                            }
-                            $empHrPosition->save();
-                        }
                     }
                 }
             }
+//            }
 
             $update = NowUpdate::query()
-                ->where('name','=','work_current')
+                ->where('name', '=', 'work_current')
                 ->first();
             if (!$update) {
                 $update = new NowUpdate();
@@ -644,131 +743,133 @@ class UpdateController extends Controller
                 'message' => "ไม่ได้รับ Token"
             ]);
         }
-        foreach ($empoyees as $i => $emp) {
-            $perId = "$emp->PersonalID";
-            $emailCmu = $emp->EmailCMU;
+
+        $perId = $request->get('perId');
+        $emp = Employee::query()->where('PersonalID', $perId)->first();
+//        foreach ($empoyees as $i => $emp) {
+        $perId = "$emp->PersonalID";
+        $emailCmu = $emp->EmailCMU;
 
 
-            if ($perId) {
+        if ($perId) {
 
-                DB::beginTransaction();
-                try {
-                    //1
+            DB::beginTransaction();
+            try {
+                //1
 
-                    $json = $this->getData('https://mis-api.cmu.ac.th/hr/v2.2/employees/personalinfo', $orgId, $perId, $token1);
+                $json = $this->getData('https://mis-api.cmu.ac.th/hr/v2.2/employees/personalinfo', $orgId, $perId, $token1);
 
-                    dd($json);
-                    $user = Employee::query()
-                        ->where('personalID', $json['personalID'])
-                        ->orWhere('emailCMU', $json['emailCMU'])
-                        ->first();
+                $user = Employee::query()
+                    ->where('personalID', $json['personalID'])
+                    ->orWhere('emailCMU', $json['emailCMU'])
+                    ->first();
 
 
-                    if ($user) {
+                if ($user) {
 //                        $user = Employee::query()->where('personalID', $json['personalID'])->first();
-                        $user->FullName = $json['prenameTha'] . '' . $json['firstNameTha'] . ' ' . $json['lastNameTha'];
-                        $user->PrenameTha = $json['prenameTha'];
-                        $user->PrenamePositionTha = $json['prenamePositionTha'];
+                    $user->FullName = $json['prenameTha'] . '' . $json['firstNameTha'] . ' ' . $json['lastNameTha'];
+                    $user->PrenameTha = $json['prenameTha'];
+                    $user->PrenamePositionTha = $json['prenamePositionTha'];
 //                        $user->PersonalID = $json['personalID'];
-                        $user->FirstNameTha = $json['firstNameTha'];
-                        $user->FirstNameEng = $json['firstNameEng'];
-                        $user->LastNameTha = $json['lastNameTha'];
-                        $user->LastNameEng = $json['lastNameEng'];
-                        $user->Race = $json['race'];
-                        $user->NationalityNameTha = $json['nationalityNameTha'];
-                        $user->RelegionNameTha = $json['relegionNameTha'];
-                        $user->SexNameTha = $json['sexNameTha'];
-                        $user->CoupleStatusNameTha = $json['coupleStatusNameTha'];
-                        $user->BirthDate = $json['birthDate'];
+                    $user->FirstNameTha = $json['firstNameTha'];
+                    $user->FirstNameEng = $json['firstNameEng'];
+                    $user->LastNameTha = $json['lastNameTha'];
+                    $user->LastNameEng = $json['lastNameEng'];
+                    $user->Race = $json['race'];
+                    $user->NationalityNameTha = $json['nationalityNameTha'];
+                    $user->RelegionNameTha = $json['relegionNameTha'];
+                    $user->SexNameTha = $json['sexNameTha'];
+                    $user->CoupleStatusNameTha = $json['coupleStatusNameTha'];
+                    $user->BirthDate = $json['birthDate'];
 //                        $user->EmailCMU = $json['emailCMU'];
-                        $user->BloodTypeNameEng = $json['bloodTypeNameEng'];
-                        $user->PersonalIDTypeID = $json['personalIDTypeID'];
-                        $user->MiddleNameEng = $json['middleNameEng'];
-                        $user->MiddleNameTha = $json['middleNameTha'];
-                        $user->CoupleStatusRef = $json['coupleStatusRef'];
-                        $user->SsoNumber = $json['ssoNumber'];
-                        $user->RdNumber = $json['rdNumber'];
+                    $user->BloodTypeNameEng = $json['bloodTypeNameEng'];
+                    $user->PersonalIDTypeID = $json['personalIDTypeID'];
+                    $user->MiddleNameEng = $json['middleNameEng'];
+                    $user->MiddleNameTha = $json['middleNameTha'];
+                    $user->CoupleStatusRef = $json['coupleStatusRef'];
+                    $user->SsoNumber = $json['ssoNumber'];
+                    $user->RdNumber = $json['rdNumber'];
 
-                        if ($json['firstWorkDate'] && $json['firstWorkDate'] != '') {
-                            $user->FirstWorkDate = $json['firstWorkDate'];
-                            $date = Carbon::createFromFormat('d/m/Y', $json['firstWorkDate']);
-                            $user->DFirstWorkDate = $date;
-                        }
+                    if ($json['firstWorkDate'] && $json['firstWorkDate'] != '') {
+                        $user->FirstWorkDate = $json['firstWorkDate'];
+                        $date = Carbon::createFromFormat('d/m/Y', $json['firstWorkDate']);
+                        $user->DFirstWorkDate = $date;
+                    }
 
-                        if ($json['inDate'] && $json['inDate'] != '') {
-                            $inDate = explode('T', $json['inDate'])[0];
+                    if ($json['inDate'] && $json['inDate'] != '') {
+                        $inDate = explode('T', $json['inDate'])[0];
 
-                            $user->InDate = $inDate;
+                        $user->InDate = $inDate;
 
 
-                            $date = Carbon::createFromFormat('d/m/Y', $inDate);
-                            $user->DInDate = $date;
+                        $date = Carbon::createFromFormat('d/m/Y', $inDate);
+                        $user->DInDate = $date;
 
 
 //                            $endDate = ($date->addYears(7))->subDay();
 //                            $user->DEndDate = $endDate;
 //                            $user->EndDate = $endDate->format('d/m/Y');
-                        }
+                    }
 
 
-                        if (isset($json['eposDate']) && $json['eposDate'] != '') {
-                            $user->EposDate = $json['eposDate'];
-                            $date = Carbon::createFromFormat('d/m/Y', $json['eposDate']);
-                            $user->DEposDate = $date;
+                    if (isset($json['eposDate']) && $json['eposDate'] != '') {
+                        $user->EposDate = $json['eposDate'];
+                        $date = Carbon::createFromFormat('d/m/Y', $json['eposDate']);
+                        $user->DEposDate = $date;
 
 
-                            //edit
-                            $endDate = ($date->addYears(7))->subDays(1);
+                        //edit
+                        $endDate = ($date->addYears(7))->subDays(1);
 //                            $date = Carbon::createFromFormat('d/m/Y', $json['eposDate']);
-                            $user->DEndDate = $endDate;
-                            $user->EndDate = $endDate->format('d/m/Y');
+                        $user->DEndDate = $endDate;
+                        $user->EndDate = $endDate->format('d/m/Y');
 
 
-                        }
+                    }
 
 
 //                $user->DFirstWorkDate = $json['firstWorkDate'];
 //                $user->DInDate = $json['inDate'];
 //                $user->DEposDate = $json['eposDate'];
 
-                        $user->EmailOther = $json['emailOther'];
-                        $user->MobilePhone = $json['mobilePhone'];
-                        $user->HomePhone = $json['homePhone'];
-                        $user->OfficePhone = $json['officePhone'];
-                        $user->employeeTypeNameTha = $json['employeeTypeNameTha'];
+                    $user->EmailOther = $json['emailOther'];
+                    $user->MobilePhone = $json['mobilePhone'];
+                    $user->HomePhone = $json['homePhone'];
+                    $user->OfficePhone = $json['officePhone'];
+                    $user->employeeTypeNameTha = $json['employeeTypeNameTha'];
 
 //                $user->education_id = 'education_id';
 //                $user->agency_id = 'agency_id';
 //                $user->position_id = 'position_id';
-                        $user->save();
-                    }
+                    $user->save();
+                }
 
-                    $update = NowUpdate::query()
-                        ->where('name','=','personal_info')
-                        ->first();
-                    if (!$update) {
-                        $update = new NowUpdate();
-                        $update->name = 'personal_info';
-                    }
-                    $update->updated_at = Carbon::now();
-                    $update->save();
-                    DB::commit();
+                $update = NowUpdate::query()
+                    ->where('name', '=', 'personal_info')
+                    ->first();
+                if (!$update) {
+                    $update = new NowUpdate();
+                    $update->name = 'personal_info';
+                }
+                $update->updated_at = Carbon::now();
+                $update->save();
+                DB::commit();
 
 //                    return redirect()->back()->with([
 //                        'success' => true,
 //                        'message' => "อัพเดทข้อมูลสำเร็จ"
 //                    ]);
 
-                } catch (\Exception $exception) {
-                    DB::rollBack();
-                    return redirect()->back()->withErrors([
-                        'success' => false,
-                        'message' => $exception->getMessage()
-                    ]);
-                }
-
+            } catch (\Exception $exception) {
+                DB::rollBack();
+                return redirect()->back()->withErrors([
+                    'success' => false,
+                    'message' => $exception->getMessage()
+                ]);
             }
+
         }
+//        }
 
         return redirect()->back()->with([
             'success' => false,
@@ -783,8 +884,8 @@ class UpdateController extends Controller
     {
         ini_set('max_execution_time', '1200');
 
-        $empoyees = Employee::query()
-            ->get();
+//        $empoyees = Employee::query()
+//            ->get();
 
 
         $api = new ApiController();
@@ -798,7 +899,9 @@ class UpdateController extends Controller
             ]);
         }
 
-        foreach ($empoyees as $i => $emp) {
+//        foreach ($empoyees as $i => $emp) {
+            $perId = $request->get('perId');
+            $emp = Employee::query()->where('PersonalID', $perId)->first();
             $perId = $emp->PersonalID;
             $emailCmu = $emp->EmailCMU;
 
@@ -921,7 +1024,7 @@ class UpdateController extends Controller
                         }
                     }
                     $update = NowUpdate::query()
-                        ->where('name','=','employee_education')
+                        ->where('name', '=', 'employee_education')
                         ->first();
                     if (!$update) {
                         $update = new NowUpdate();
@@ -939,9 +1042,8 @@ class UpdateController extends Controller
                 }
 
 
-
             }
-        }
+//        }
 
         return redirect()->back()->with([
             'success' => false,
@@ -967,7 +1069,6 @@ class UpdateController extends Controller
                 'message' => "ไม่ได้รับ Token"
             ]);
         }
-
 
 
         DB::beginTransaction();
@@ -1058,7 +1159,7 @@ class UpdateController extends Controller
                 }
             }
             $update = NowUpdate::query()
-                ->where('name','=','employee_executive')
+                ->where('name', '=', 'employee_executive')
                 ->first();
             if (!$update) {
                 $update = new NowUpdate();
@@ -1133,7 +1234,7 @@ class UpdateController extends Controller
                         //      "leaveTypeID" => 1
                     }
                     $update = NowUpdate::query()
-                        ->where('name','=','leave_history')
+                        ->where('name', '=', 'leave_history')
                         ->first();
                     if (!$update) {
                         $update = new NowUpdate();
@@ -1241,7 +1342,7 @@ class UpdateController extends Controller
                 }
             }
             $update = NowUpdate::query()
-                ->where('name','=','leave_education')
+                ->where('name', '=', 'leave_education')
                 ->first();
             if (!$update) {
                 $update = new NowUpdate();
@@ -1308,7 +1409,7 @@ class UpdateController extends Controller
 //      "fameID" => 1
 
                     $update = NowUpdate::query()
-                        ->where('name','=','employee_fame')
+                        ->where('name', '=', 'employee_fame')
                         ->first();
                     if (!$update) {
                         $update = new NowUpdate();
@@ -1366,7 +1467,7 @@ class UpdateController extends Controller
                     $json = $this->getData('https://mis-api.cmu.ac.th/hr/v2.2/employees/addresss/permanent', $orgId, $perId, $token2);
 
                     $update = NowUpdate::query()
-                        ->where('name','=','employee_address')
+                        ->where('name', '=', 'employee_address')
                         ->first();
                     if (!$update) {
                         $update = new NowUpdate();

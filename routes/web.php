@@ -53,9 +53,9 @@ Route::group(['prefix'=> 'update'],function(){
     //update education
     Route::get('update_employee_education', [\App\Http\Controllers\UpdateController::class, 'update_employee_education'])->name('update_employee_education');
 
+
     //update executive
     Route::get('update_employee_executive', [\App\Http\Controllers\UpdateController::class, 'update_employee_executive'])->name('update_employee_executive');
-
 
 
     //update leavehistory
@@ -65,10 +65,10 @@ Route::group(['prefix'=> 'update'],function(){
     Route::get('update_employee_leaveeducation', [\App\Http\Controllers\UpdateController::class, 'update_employee_leaveeducation'])->name('update_employee_leaveeducation');
 
 
-    //update leaveeducation
+    //update fame
     Route::get('update_employee_fame', [\App\Http\Controllers\UpdateController::class, 'update_employee_fame'])->name('update_employee_fame');
 
-    //update leaveeducation
+    //update address
     Route::get('update_employee_address', [\App\Http\Controllers\UpdateController::class, 'update_employee_address'])->name('update_employee_address');
 
 });

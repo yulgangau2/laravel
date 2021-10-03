@@ -82,29 +82,29 @@ Route::get('get_token',function (Request $request){
 })->name('get_token');
 
 //update Personal Info
-Route::post('update_personal_info', [\App\Http\Controllers\UpdateController::class, 'update_personal_info'])->name('api_update_personal_info');
+Route::post('update_personal_info', [\App\Http\Controllers\Api\UpdateController::class, 'update_personal_info'])->name('api_update_personal_info');
 
 //update history worker
-Route::post('update_history_worker', [\App\Http\Controllers\UpdateController::class, 'update_history_worker'])->name('api_update_history_worker');
+Route::post('update_history_worker', [\App\Http\Controllers\Api\UpdateController::class, 'update_history_worker'])->name('api_update_history_worker');
 
 //update workcurrentinfo //check
-Route::post('update_work_current_info', [\App\Http\Controllers\UpdateController::class, 'update_work_current_info'])->name('api_update_work_current_info');
+Route::post('update_work_current_info', [\App\Http\Controllers\Api\UpdateController::class, 'update_work_current_info'])->name('api_update_work_current_info');
 
 
 //update education
-Route::post('update_employee_education', [\App\Http\Controllers\UpdateController::class, 'update_employee_education'])->name('api_update_employee_education');
+Route::post('update_employee_education', [\App\Http\Controllers\Api\UpdateController::class, 'update_employee_education'])->name('x');
 
 //update executive
-Route::post('update_employee_executive', [\App\Http\Controllers\UpdateController::class, 'update_employee_executive'])->name('api_update_employee_executive');
+Route::post('update_employee_executive', [\App\Http\Controllers\Api\UpdateController::class, 'update_employee_executive'])->name('api_update_employee_executive');
 
 //update leavehistory
-Route::post('update_employee_leavehistory', [\App\Http\Controllers\UpdateController::class, 'update_employee_leavehistory'])->name('api_update_employee_leavehistory');
+Route::post('update_employee_leavehistory', [\App\Http\Controllers\Api\UpdateController::class, 'update_employee_leavehistory'])->name('api_update_employee_leavehistory');
 
 //update leaveeducation
-Route::post('update_employee_leaveeducation', [\App\Http\Controllers\UpdateController::class, 'update_employee_leaveeducation'])->name('api_update_employee_leaveeducation');
+Route::post('update_employee_leaveeducation', [\App\Http\Controllers\Api\UpdateController::class, 'update_employee_leaveeducation'])->name('api_update_employee_leaveeducation');
 
 //update leaveeducation
-Route::post('update_employee_fame', [\App\Http\Controllers\UpdateController::class, 'update_employee_fame'])->name('api_update_employee_fame');
+Route::post('update_employee_fame', [\App\Http\Controllers\Api\UpdateController::class, 'update_employee_fame'])->name('api_update_employee_fame');
 
 //update leaveeducation
-Route::post('update_employee_address', [\App\Http\Controllers\UpdateController::class, 'update_employee_address'])->name('api_update_employee_address');
+Route::post('update_employee_address', [\App\Http\Controllers\Api\UpdateController::class, 'update_employee_address'])->name('api_update_employee_address');
