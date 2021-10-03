@@ -92,7 +92,7 @@ Route::post('update_work_current_info', [\App\Http\Controllers\Api\UpdateControl
 
 
 //update education
-Route::post('update_employee_education', [\App\Http\Controllers\Api\UpdateController::class, 'update_employee_education'])->name('x');
+Route::post('update_employee_education', [\App\Http\Controllers\Api\UpdateController::class, 'update_employee_education'])->name('api_update_employee_education');
 
 //update executive
 Route::post('update_employee_executive', [\App\Http\Controllers\Api\UpdateController::class, 'update_employee_executive'])->name('api_update_employee_executive');
