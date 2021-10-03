@@ -597,7 +597,9 @@ class UpdateController extends Controller
                         }
                     }
                 }
-                dd(445566,"work");
+                if ($i ==20){
+                    dd(5555);
+                }
             }
 
             $update = NowUpdate::query()
