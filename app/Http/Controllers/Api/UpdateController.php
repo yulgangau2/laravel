@@ -589,14 +589,16 @@ class UpdateController extends Controller
             $update->updated_at = Carbon::now();
             $update->save();
             DB::commit();
-            return redirect()->back()->with([
+
+            return response()->json([
                 'success' => true,
-                'message' => 'อัพเดทข้อมูลสำเร็จ'
+                'message' => "อัพเดทข้อมูลสำเร็จ"
             ]);
         } catch (\Exception $exception) {
             DB::rollBack();
 
-            return redirect()->back()->withErrors([
+
+            return response()->json([
                 'success' => false,
                 'message' => $exception->getMessage()
             ]);
@@ -712,17 +714,26 @@ class UpdateController extends Controller
             $update->updated_at = Carbon::now();
             $update->save();
             DB::commit();
-            return redirect()->back()->with([
+            return response()->json([
                 'success' => true,
-                'message' => 'อัพเดทข้อมูลสำเร็จ'
+                'message' => "อัพเดทข้อมูลสำเร็จ"
             ]);
+//            return redirect()->back()->with([
+//                'success' => true,
+//                'message' => 'อัพเดทข้อมูลสำเร็จ'
+//            ]);
         } catch (\Exception $exception) {
             DB::rollBack();
 
-            return redirect()->back()->withErrors([
+
+            return response()->json([
                 'success' => false,
                 'message' => $exception->getMessage()
             ]);
+//            return redirect()->back()->withErrors([
+//                'success' => false,
+//                'message' => $exception->getMessage()
+//            ]);
         }
     }
 
@@ -862,7 +873,8 @@ class UpdateController extends Controller
 
             } catch (\Exception $exception) {
                 DB::rollBack();
-                return redirect()->back()->withErrors([
+
+                return response()->json([
                     'success' => false,
                     'message' => $exception->getMessage()
                 ]);
@@ -871,9 +883,10 @@ class UpdateController extends Controller
         }
 //        }
 
-        return redirect()->back()->with([
-            'success' => false,
-            'message' => 'อัพเดทข้อมูลสำเร็จ'
+
+        return response()->json([
+            'success' => true,
+            'message' => "อัพเดทข้อมูลสำเร็จ"
         ]);
 
 
@@ -1035,7 +1048,8 @@ class UpdateController extends Controller
                     DB::commit();
                 } catch (\Exception $exception) {
                     DB::rollBack();
-                    return redirect()->back()->withErrors([
+
+                    return response()->json([
                         'success' => false,
                         'message' => $exception->getMessage()
                     ]);
@@ -1045,9 +1059,10 @@ class UpdateController extends Controller
             }
 //        }
 
-        return redirect()->back()->with([
-            'success' => false,
-            'message' => 'อัพเดทข้อมูลสำเร็จ'
+
+        return response()->json([
+            'success' => true,
+            'message' => "อัพเดทข้อมูลสำเร็จ"
         ]);
     }
 
