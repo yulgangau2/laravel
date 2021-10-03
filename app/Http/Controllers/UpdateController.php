@@ -511,8 +511,9 @@ class UpdateController extends Controller
         $orgId = '0000000021';
         ini_set('max_execution_time', 1200);
         set_time_limit(1200);
-        
 
+        phpinfo();
+        die();
         $api = new ApiController();
 
         $token = $api->getToken("mishr.$orgId.workcurrentinfo");
