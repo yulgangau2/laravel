@@ -648,7 +648,7 @@ class UpdateController extends Controller
                 }
 
                 if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
-                    $type = strpos($json['hrPositionNumber'], 'EP') !== false ? 'เชิงรุก' : 'พันธกิิจ';
+                    $type = strpos($json['hrPositionNumber'], 'EP') !== false ? 'เชิงรุก' : 'พันธกิจ';
                     $emp->Type = $type;
 
                 }
@@ -683,7 +683,7 @@ class UpdateController extends Controller
                     $empHrPosition->year = $year;
                     $empHrPosition->employee_id = $emp->id;
                     if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
-                        $type = strpos($json['hrPositionNumber'], 'EP') !== false ? 'เชิงรุก' : 'พันธกิิจ';
+                        $type = strpos($json['hrPositionNumber'], 'EP') !== false ? 'เชิงรุก' : 'พันธกิจ';
                         $empHrPosition->hrPositionNumber = $json['hrPositionNumber'];
                         $empHrPosition->Type = $type;
                     }
@@ -694,7 +694,7 @@ class UpdateController extends Controller
                         $empHrPosition->year = $year;
                         $empHrPosition->employee_id = $emp->id;
                         if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
-                            $type = strpos($json['hrPositionNumber'], 'EP') !== false ? 'เชิงรุก' : 'พันธกิิจ';
+                            $type = strpos($json['hrPositionNumber'], 'EP') !== false ? 'เชิงรุก' : 'พันธกิจ';
                             $empHrPosition->hrPositionNumber = $json['hrPositionNumber'];
                             $empHrPosition->Type = $type;
                         }
