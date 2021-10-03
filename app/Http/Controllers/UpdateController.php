@@ -138,9 +138,6 @@ class UpdateController extends Controller
                     if ($row[0] == "" || $row[1] == ""){
                         continue;
                     }
-                    if ($row[14] == 'ผู้ช่วยศาสตราจารย์'){
-                        dd($row);
-                    }
                     $name = explode("\n",$row[1]);
 
                     $start_red_at = null;
