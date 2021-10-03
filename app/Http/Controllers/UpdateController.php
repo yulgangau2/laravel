@@ -597,7 +597,7 @@ class UpdateController extends Controller
                         }
                     }
                 }
-                if ($i ==20){
+                if ($i == 60){
                     dd(5555);
                 }
             }
