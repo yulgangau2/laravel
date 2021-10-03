@@ -73,7 +73,7 @@
                                     </form>
                                 </td>
                                 <td>
-                                    <h5>{{$layoff->updated_at}}</h5>
+                                    <h5>{{$layoff ? $layoff->updated_at : ''}}</h5>
                                 </td>
                             </tr>
                             <tr>
