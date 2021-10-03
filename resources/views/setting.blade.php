@@ -174,34 +174,36 @@
         var perIds = [];
         var data = [];
         @if(count($personal_ids) > 0)
-            @foreach($personal_ids as $i=> $perId)
-               perIds.push("{{$perId}}")
-            @endforeach
+        @foreach($personal_ids as $i=> $perId)
+        perIds.push("{{$perId}}")
+        @endforeach
         @endif
 
         function task(perId) {
-            setTimeout(function() {
-                $.ajax({
-                    data : {
-                        'perId' : perId
-                    },
-                    url: "{{route('api_update_work_current_info')}}",
-                    encoding :'',
-                    timeout:0,
-                    method: "post"
-                }).done(function(response) {
-                    if (response.data && response.data.perId == perId) {
-                        if (response.data.success) {
-                            alert("success");
-                        }
+            $.ajax({
+                data: {
+                    'perId': perId
+                },
+                url: "{{route('api_update_work_current_info')}}",
+                encoding: '',
+                timeout: 0,
+                method: "post"
+            }).done(function (response) {
+                if (response.data && response.data.perId == perId) {
+                    if (response.data.success) {
+                        alert("success");
                     }
-                })
-            }, 10000);
+                }
+            })
+
         }
 
-        function update_work_current_info(){
+        function update_work_current_info() {
             for (var i = 0; i < perIds.length; i++) {
-                task(perIds[i])
+
+                setTimeout(function () {
+                    task(perIds[i])
+                }, 10000);
             }
         }
 
