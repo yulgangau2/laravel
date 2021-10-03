@@ -109,11 +109,11 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="text-center">{{$employee->updated_at ? $employee->updated_at : ''}}</td>
-                                <td class="text-center">{{$work_current->updated_at ? $work_current->updated_at : ''}}</td>
-                                <td class="text-center">{{$personal_info->updated_at ? $personal_info->updated_at : ''}}</td>
-                                <td class="text-center">{{$history_work->updated_at ? $history_work->updated_at  :''}}</td>
-                                <td class="text-center">{{$employee_education->updated_at ? $employee_education->updated_at : ''}}</td>
+                                <td class="text-center">{{$employee ? $employee->updated_at : ''}}</td>
+                                <td class="text-center">{{$work_current ? $work_current->updated_at : ''}}</td>
+                                <td class="text-center">{{$personal_info ? $personal_info->updated_at : ''}}</td>
+                                <td class="text-center">{{$history_work ? $history_work->updated_at  :''}}</td>
+                                <td class="text-center">{{$employee_education ? $employee_education->updated_at : ''}}</td>
                             </tr>
                             <tr>
                                 <td>
