@@ -86,7 +86,7 @@
                                 <td>
                                     <form action="{{route('update_work_current_info')}}" method="get">
                                         {{csrf_field()}}
-                                        <button class="btn" type="submit">อัพเดทการทำงานปัจจุบัน</button>
+                                        <button class="btn" type="button" onclick="update_work_current_info()">อัพเดทการทำงานปัจจุบัน</button>
                                     </form>
                                 </td>
                                 <td>
@@ -165,4 +165,22 @@
     </div>
 
 
+@endsection
+
+@section('script')
+    <script>
+
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('custom-header', 'some value');
+            }
+        });
+
+        function update_work_current_info(){
+            $.ajax({
+                url: "{{route('api_update_work_current_info')}}",
+                method : "post"
+            });
+        }
+    </script>
 @endsection

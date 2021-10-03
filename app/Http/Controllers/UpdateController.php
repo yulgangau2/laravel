@@ -613,17 +613,25 @@ class UpdateController extends Controller
             $update->updated_at = Carbon::now();
             $update->save();
             DB::commit();
-            return redirect()->back()->with([
-                'success' => true,
-                'message' => 'อัพเดทข้อมูลสำเร็จ'
+            return response()->json([
+                'message' => 'สำเร็จ',
+                'success' => true
             ]);
+//            return redirect()->back()->with([
+//                'success' => true,
+//                'message' => 'อัพเดทข้อมูลสำเร็จ'
+//            ]);
         } catch (\Exception $exception) {
             DB::rollBack();
 
-            return redirect()->back()->withErrors([
-                'success' => false,
-                'message' => $exception->getMessage()
+            return response()->json([
+                'message' => $exception->getMessage(),
+                'success' => false
             ]);
+//            return redirect()->back()->withErrors([
+//                'success' => false,
+//                'message' => $exception->getMessage()
+//            ]);
         }
     }
 

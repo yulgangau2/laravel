@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-xl-12">
             <div class="breadcrumb-holder">
-                <h1 class="main-title float-left">ข้อมูลพนักงานประจำ/ชั่วคราว</h1>
+                <h1 class="main-title float-left">ข้อมูลตำแหน่งพันธกิจและเชิงรุก</h1>
                 <ol class="breadcrumb float-right">
                     <li class="breadcrumb-item">Home</li>
                     <li class="breadcrumb-item active">ข้อมูลพนักงานประจำ/ชั่วคราว</li>
