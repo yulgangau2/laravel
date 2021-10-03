@@ -196,7 +196,7 @@
                         }
                     }
                 })
-            }, 10);
+            }, 10000);
         }
 
         function update_work_current_info(){
