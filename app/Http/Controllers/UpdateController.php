@@ -533,7 +533,6 @@ class UpdateController extends Controller
                 $emailCmu = $emp->EmailCMU;
                 $json = $this->getData("https://mis-api.cmu.ac.th/hr/v2.2/employees/workcurrentinfo", $orgId, $perId, $token);
 
-                dd($json);
                 if (isset($json['workStatusNameTha']) && $json['workStatusNameTha'] == 'ทำงานปกติ') {
                     if (isset($json['hrPositionNumber']) && $json['hrPositionNumber']) {
                         $emp->HrPositionNumber = $json['hrPositionNumber'];
@@ -598,6 +597,7 @@ class UpdateController extends Controller
                         }
                     }
                 }
+                dd("work");
             }
 
             $update = NowUpdate::query()
