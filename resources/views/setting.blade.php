@@ -179,6 +179,11 @@
         @endforeach
         @endif
 
+        const sleep = (milliseconds) => {
+            return new Promise(resolve => setTimeout(resolve, milliseconds))
+        }
+
+
         function task(perId) {
             $.ajax({
                 data: {
@@ -198,13 +203,18 @@
 
         }
 
-        function update_work_current_info() {
-            for (var i = 0; i < perIds.length; i++) {
 
-                setTimeout(function () {
-                    task(perIds[i])
-                }, 10000);
+        function waitforme(ms)  {
+            return new Promise( resolve => { setTimeout(resolve, ms); });
+        }
+
+
+        async function update_work_current_info() {
+            for (var i = 0; i < perIds.length; i++) {
+                task(perIds[i])
+                await waitforme(4000);
             }
+            alert("อัพเดทข้อมูลสำเร็จ")
         }
 
     </script>
