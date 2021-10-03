@@ -12,6 +12,7 @@ use App\EmployeeHrPosition;
 use App\EmployeeLeaveEducation;
 use App\EmployeePositionHistory;
 use App\Executive;
+use App\NowUpdate;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -237,6 +238,18 @@ class UpdateController extends Controller
                 $emp->save();
             }
 
+
+
+
+            $update = NowUpdate::query()
+                ->where('name','=','employee')
+                ->first();
+            if (!$update) {
+                $update = new NowUpdate();
+                $update->name = 'employee';
+            }
+            $update->updated_at = Carbon::now();
+            $update->save();
             DB::commit();
             return redirect()->back()->with([
                 'success' => true,
@@ -468,6 +481,15 @@ class UpdateController extends Controller
                 }
             }
 
+            $update = NowUpdate::query()
+                ->where('name','=','history_work')
+                ->first();
+            if (!$update) {
+                $update = new NowUpdate();
+                $update->name = 'history_work';
+            }
+            $update->updated_at = Carbon::now();
+            $update->save();
             DB::commit();
             return redirect()->back()->with([
                 'success' => true,
@@ -577,6 +599,15 @@ class UpdateController extends Controller
                 }
             }
 
+            $update = NowUpdate::query()
+                ->where('name','=','work_current')
+                ->first();
+            if (!$update) {
+                $update = new NowUpdate();
+                $update->name = 'work_current';
+            }
+            $update->updated_at = Carbon::now();
+            $update->save();
             DB::commit();
             return redirect()->back()->with([
                 'success' => true,
@@ -616,8 +647,8 @@ class UpdateController extends Controller
 
             if ($perId) {
 
-                DB::beginTransaction();
-                try {
+//                DB::beginTransaction();
+//                try {
                     //1
 
                     $json = $this->getData('https://mis-api.cmu.ac.th/hr/v2.2/employees/personalinfo', $orgId, $perId, $token1);
@@ -706,19 +737,29 @@ class UpdateController extends Controller
 //                $user->position_id = 'position_id';
                         $user->save();
                     }
-                    DB::commit();
+
+                    $update = NowUpdate::query()
+                        ->where('name','=','personal_info')
+                        ->first();
+                    if (!$update) {
+                        $update = new NowUpdate();
+                        $update->name = 'personal_info';
+                    }
+                    $update->updated_at = Carbon::now();
+                    $update->save();
+//                    DB::commit();
 //                    return redirect()->back()->with([
 //                        'success' => true,
 //                        'message' => "อัพเดทข้อมูลสำเร็จ"
 //                    ]);
 
-                } catch (\Exception $exception) {
-                    DB::rollBack();
-                    return redirect()->back()->withErrors([
-                        'success' => false,
-                        'message' => $exception->getMessage()
-                    ]);
-                }
+//                } catch (\Exception $exception) {
+//                    DB::rollBack();
+//                    return redirect()->back()->withErrors([
+//                        'success' => false,
+//                        'message' => $exception->getMessage()
+//                    ]);
+//                }
 
             }
         }
@@ -873,7 +914,15 @@ class UpdateController extends Controller
 
                         }
                     }
-
+                    $update = NowUpdate::query()
+                        ->where('name','=','employee_education')
+                        ->first();
+                    if (!$update) {
+                        $update = new NowUpdate();
+                        $update->name = 'employee_education';
+                    }
+                    $update->updated_at = Carbon::now();
+                    $update->save();
                     DB::commit();
                 } catch (\Exception $exception) {
                     DB::rollBack();
@@ -1002,6 +1051,15 @@ class UpdateController extends Controller
 
                 }
             }
+            $update = NowUpdate::query()
+                ->where('name','=','employee_executive')
+                ->first();
+            if (!$update) {
+                $update = new NowUpdate();
+                $update->name = 'employee_executive';
+            }
+            $update->updated_at = Carbon::now();
+            $update->save();
             DB::commit();
             return redirect()->back()->with([
                 'success' => false,
@@ -1068,6 +1126,15 @@ class UpdateController extends Controller
                         //      "employeeLeaveID" => 32
                         //      "leaveTypeID" => 1
                     }
+                    $update = NowUpdate::query()
+                        ->where('name','=','leave_history')
+                        ->first();
+                    if (!$update) {
+                        $update = new NowUpdate();
+                        $update->name = 'leave_history';
+                    }
+                    $update->updated_at = Carbon::now();
+                    $update->save();
                     DB::commit();
                     return redirect()->back()->with([
                         'success' => false,
@@ -1167,6 +1234,15 @@ class UpdateController extends Controller
 
                 }
             }
+            $update = NowUpdate::query()
+                ->where('name','=','leave_education')
+                ->first();
+            if (!$update) {
+                $update = new NowUpdate();
+                $update->name = 'leave_education';
+            }
+            $update->updated_at = Carbon::now();
+            $update->save();
 
             DB::commit();
             return redirect()->back()->with([
@@ -1225,6 +1301,15 @@ class UpdateController extends Controller
 //      "receiveReturnStatusName" => "- / -"
 //      "fameID" => 1
 
+                    $update = NowUpdate::query()
+                        ->where('name','=','employee_fame')
+                        ->first();
+                    if (!$update) {
+                        $update = new NowUpdate();
+                        $update->name = 'employee_fame';
+                    }
+                    $update->updated_at = Carbon::now();
+                    $update->save();
                     DB::commit();
                     return redirect()->back()->with([
                         'success' => false,
@@ -1274,6 +1359,15 @@ class UpdateController extends Controller
                     // 2 //
                     $json = $this->getData('https://mis-api.cmu.ac.th/hr/v2.2/employees/addresss/permanent', $orgId, $perId, $token2);
 
+                    $update = NowUpdate::query()
+                        ->where('name','=','employee_address')
+                        ->first();
+                    if (!$update) {
+                        $update = new NowUpdate();
+                        $update->name = 'employee_address';
+                    }
+                    $update->updated_at = Carbon::now();
+                    $update->save();
                     DB::commit();
                     return redirect()->back()->with([
                         'success' => false,

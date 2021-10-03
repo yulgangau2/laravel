@@ -15,6 +15,7 @@ use App\EmployeePositionHistory;
 use App\Executive;
 use App\HistoryWork;
 use App\LayOff;
+use App\NowUpdate;
 use App\Position;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -1179,7 +1180,35 @@ class ReportController extends Controller
 
     public function setting()
     {
+
+        $updates = NowUpdate::query()->get();
+        $layoff = NowUpdate::query()->where('name','layoff')->first();
+
+        $employee = NowUpdate::query()->where('name','employee')->first();
+        $work_current = NowUpdate::query()->where('name','work_current')->first();
+        $personal_info = NowUpdate::query()->where('name','personal_info')->first();
+        $history_work = NowUpdate::query()->where('name','history_work')->first();
+        $employee_education = NowUpdate::query()->where('name','employee_education')->first();
+
+        $executive = NowUpdate::query()->where('name','employee_executive')->first();
+        $leave_history = NowUpdate::query()->where('name','leave_history')->first();
+        $leave_education = NowUpdate::query()->where('name','leave_education')->first();
+        $employee_address = NowUpdate::query()->where('name','employee_address')->first();
+        $employee_fame = NowUpdate::query()->where('name','employee_fame')->first();
+
+
         return view('setting', [
+            'layoff' => $layoff,
+            'employee' => $employee,
+            'work_current' => $work_current,
+            'personal_info' => $personal_info,
+            'history_work' => $history_work,
+            'employee_education' => $employee_education,
+            'executive' => $executive,
+            'leave_history' => $leave_history,
+            'leave_education' => $leave_education,
+            'employee_address' => $employee_address,
+            'employee_fame' => $employee_fame,
 
         ]);
     }

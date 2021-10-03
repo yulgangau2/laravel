@@ -46,7 +46,7 @@
                         <table class="table table-striped">
                             <tbody>
                             <tr>
-                                <td colspan="5">
+                                <td colspan="4">
                                     <form action="{{route('upload_layoff')}}"
                                           enctype="multipart/form-data"
                                           method="post">
@@ -71,6 +71,9 @@
                                             </div>
                                         </div>
                                     </form>
+                                </td>
+                                <td>
+                                    <h5>{{$layoff->updated_at}}</h5>
                                 </td>
                             </tr>
                             <tr>
@@ -106,6 +109,13 @@
                                 </td>
                             </tr>
                             <tr>
+                                <td class="text-center">{{$employee->updated_at ? $employee->updated_at : ''}}</td>
+                                <td class="text-center">{{$work_current->updated_at ? $work_current->updated_at : ''}}</td>
+                                <td class="text-center">{{$personal_info->updated_at ? $personal_info->updated_at : ''}}</td>
+                                <td class="text-center">{{$history_work->updated_at ? $history_work->updated_at  :''}}</td>
+                                <td class="text-center">{{$employee_education->updated_at ? $employee_education->updated_at : ''}}</td>
+                            </tr>
+                            <tr>
                                 <td>
                                     <form action="{{route('update_employee_executive')}}" method="get">
                                         {{csrf_field()}}
@@ -136,6 +146,13 @@
                                         <button class="btn" type="submit">อัพเดทเครื่องราชอิสริยาภรณ์</button>
                                     </form>
                                 </td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">{{$executive ? $executive->updated_at : '-'}}</td>
+                                <td class="text-center">{{$leave_history ? $leave_history->updated_at : '-'}}</td>
+                                <td class="text-center">{{$leave_education ? $leave_education->updated_at : '-'}}</td>
+                                <td class="text-center">{{$employee_address ? $employee_address->updated_at  :'-'}}</td>
+                                <td class="text-center">{{$employee_fame ? $employee_fame->updated_at : '-'}}</td>
                             </tr>
                             </tbody>
                         </table>
