@@ -499,7 +499,8 @@ class ReportController extends Controller
                 'position' => $layoff->position,
                 'first_dat' => $layoff->first_day,
                 'amount' => $amount,
-                'year_start' => (int)$s_year
+                'year_start' => (int)$s_year,
+                'exit_at' => $layoff->exit_at
             ];
 
             $users[] = $tmp;
