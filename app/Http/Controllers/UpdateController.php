@@ -529,10 +529,12 @@ class UpdateController extends Controller
 
         DB::beginTransaction();
         try {
-            $emps = Employee::query()
-                ->get();
+//            $emps = Employee::query()
+//                ->get();
 
-            foreach ($emps as $i => $emp) {
+            $perId = $request->get('perId');
+            $emp = Employee::query()->where('PersonalID',$perId)->first();
+//            foreach ($emps as $i => $emp) {
                 $perId = $emp->PersonalID;
                 $emailCmu = $emp->EmailCMU;
                 $json = $this->getData("https://mis-api.cmu.ac.th/hr/v2.2/employees/workcurrentinfo", $orgId, $perId, $token);
@@ -601,7 +603,7 @@ class UpdateController extends Controller
                         }
                     }
                 }
-            }
+//            }
 
             $update = NowUpdate::query()
                 ->where('name','=','work_current')

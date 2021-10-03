@@ -181,24 +181,24 @@
 
 
         function update_work_current_info(){
-            console.log(perIds,33333)
             for (var i = 0; i < perIds.length; i++) {
-                getData("https://mis-api.cmu.ac.th/hr/v2.2/employees/workcurrentinfo", perIds[i], 'rVhfqgcZTwZXrKDFyHuNPAeMHNWZZ46j');
+                $.ajax({
+                    data : {
+                      'perId' : perIds[i]
+                    },
+                    url: "{{route('api_update_work_current_info')}}",
+                    encoding :'',
+                    timeout:0,
+                    method: "post"
+                }).done(function(response) {
+                    if (response.data.perid == perIds[perIds.length-1]) {
+                        if (response.data.success) {
+                            alert("success");
+                        }
+                    }
+                })
             }
         }
 
-        function getData(url, perId, token) {
-            $.ajaxSetup({
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader('orgid', '0000000021');
-                    xhr.setRequestHeader('personalid', perId);
-                    xhr.setRequestHeader('Authorization', 'Bearer '+token);
-                }
-            });
-            $.ajax({
-                url: url,
-                method: "get"
-            });
-        }
     </script>
 @endsection
