@@ -34,6 +34,12 @@
                     </a>
                 </li>
                 <li class="submenu">
+                    <a class="{{ \Illuminate\Support\Facades\Route::currentRouteName() == 'graph_hr_position' ? 'active' : '' }}"
+                       href="{{route('graph_hr_position')}}"><i class="fa fa-fw fa-tv"></i>
+                        <span>ข้อมูลพันธกิจและเชิงรุก</span>
+                    </a>
+                </li>
+                <li class="submenu">
                     <a class="{{ \Illuminate\Support\Facades\Route::currentRouteName() == 'index4' ? 'active' : '' }}"
                        href="{{route('index4')}}"><i class="fa fa-fw fa-windows"></i>
                         <span>คุณวุฒิบุคลากรสายวิชาการ</span>

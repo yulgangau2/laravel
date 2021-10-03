@@ -27,6 +27,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('layoff', [\App\Http\Controllers\ReportController::class, 'index2'])->name('index2');
 //    Route::get('index2', [\App\Http\Controllers\ReportController::class, 'index2'])->name('index2');
     Route::get('employee_dashboard', [\App\Http\Controllers\ReportController::class, 'index3'])->name('index3');
+    Route::get('graph_hr_position', [\App\Http\Controllers\ReportController::class, 'graph_hr_position'])->name('graph_hr_position');
     Route::get('education_dashboard', [\App\Http\Controllers\ReportController::class, 'index4'])->name('index4');
 
 

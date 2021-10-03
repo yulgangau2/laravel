@@ -455,11 +455,11 @@ class ReportController extends Controller
             $s_year = Carbon::createFromFormat('d/m/Y', $layoff->start_green_at)->addYear()->format('Y');
 
             if ($layoff->end_red_at) {
-                $e = Carbon::createFromFormat('d/m/Y', $layoff->start_red_at);
+                $e = Carbon::createFromFormat('d/m/Y', $layoff->exit_at);
                 $amount = $now->diffInDays($e);
                 $e_year = Carbon::createFromFormat('d/m/Y', $layoff->end_red_at)->format('Y');
             } else {
-                $e = Carbon::createFromFormat('d/m/Y', $layoff->start_red_at);
+                $e = Carbon::createFromFormat('d/m/Y', $layoff->exit_at);
 //                $e = Carbon::createFromFormat('d/m/Y', $layoff->end_yellow_at);
                 $amount = $now->diffInDays($e);
                 $e_year = Carbon::createFromFormat('d/m/Y', $layoff->end_yellow_at)->format('Y');
@@ -553,8 +553,14 @@ class ReportController extends Controller
             ->get();
 
 
-        $startYear = $request->get('start_year', 2560);
-        $endYear = $request->get('end_year', 2564);
+        $startYear = $request->get('start_year');
+        if (!$startYear) {
+            $startYear = 2560;
+        }
+        $endYear = $request->get('end_year');
+        if(!$endYear) {
+            $endYear = (int)Carbon::now()->addYears(543)->format('Y');
+        }
 
         $searchYear = $request->get('search_year', 2564);
         $hrPositions = EmployeeHrPosition::query()
@@ -689,6 +695,60 @@ class ReportController extends Controller
             }
 
         }
+
+
+//        dd($x);
+        return view('index3', [
+            'data' => $data,
+            'years' => $years
+        ]);
+    }
+
+    public function graph_hr_position(Request $request)
+    {
+        $temp = ["เจ้าหน้าที่โครงการ", 'ผู้ประสานงานโครงการ', 'นักวิจัย', 'เจ้าหน้าที่ประสานงานโครงการ'];
+        $employees = Employee::query()
+            ->whereNotIn('PositionName', $temp)
+            ->get()
+            ->groupBy('id');
+
+
+
+        $ids = Employee::query()
+            ->whereNotIn('PositionName', $temp)
+            ->pluck('id');
+
+        $emps = Employee::query()
+            ->whereIn('id', $ids)
+            ->get();
+
+
+        $startYear = $request->get('start_year');
+        if (!$startYear) {
+            $startYear = 2560;
+        }
+        $endYear = $request->get('end_year');
+        if(!$endYear) {
+            $endYear = (int)Carbon::now()->addYears(543)->format('Y');
+        }
+
+        $searchYear = $request->get('search_year', 2564);
+        $hrPositions = EmployeeHrPosition::query()
+            ->where('year',$searchYear)
+            ->get()
+            ->groupBy('employee_id');
+
+        $history = EmployeePositionHistory::query()
+            ->where('year', '>=', $startYear)
+            ->where('year', '<=', $endYear)
+            ->whereIn('employee_id', $ids)
+            ->orderBy('year', 'ASC')
+            ->with(['employee'])
+            ->get()
+            ->groupBy(['year', 'employee_id']);
+
+
+        $data = [];
         $data['full_look'] = 0;
         $data['full_pun'] = 0;
         $data['part_look'] = 0;
@@ -700,21 +760,26 @@ class ReportController extends Controller
             $employee = isset($history[$searchYear][$id]) ? $history[$searchYear][$id][0] : null;
 
             if ($employee) {
-                if ($employee->PositionName == 'อาจารย์' || $employee->PositionName == 'ผู้ช่วยศาสตราจารย์' || $employee->PositionName == 'รองศาสตราจารย์' || $employee->PositionName == 'ศาสตราจารย์') {
 
-                    if ($hrPositions[$emp[0]->id][0]->Type == 'เชิงรุก') {
-                        $data['full_look'] += 1;
-                    }else{
-                        $data['full_pun'] += 1;
+                if ($employee->PositionName == 'อาจารย์' || $employee->PositionName == 'ผู้ช่วยศาสตราจารย์' || $employee->PositionName == 'รองศาสตราจารย์' || $employee->PositionName == 'ศาสตราจารย์') {
+                    if (isset($hrPositions[$emp[0]->id][0])) {
+                        if ($hrPositions[$emp[0]->id][0]->Type == 'เชิงรุก') {
+                            $data['full_look'] += 1;
+                        } else {
+                            $data['full_pun'] += 1;
+                        }
                     }
                 } else {
-                    if ($hrPositions[$emp[0]->id][0] == 'เชิงรุก') {
-                        $data['part_look'] += 1;
-                    }else{
-                        $data['part_pun'] += 1;
+                    if (isset($hrPositions[$emp[0]->id][0])) {
+                        if ($hrPositions[$emp[0]->id][0] == 'เชิงรุก') {
+                            $data['part_look'] += 1;
+                        } else {
+                            $data['part_pun'] += 1;
+                        }
                     }
                 }
             } else {
+
                 $employee = Employee::query()->where('id', $emp[0]->id)->first();
 
                 $firstWork = (int)Carbon::createFromFormat('d/m/Y',$employee->FirstWorkDate)->format('Y');
@@ -727,17 +792,20 @@ class ReportController extends Controller
 
                 if ($firstWork <= $searchYear && !$hisPoint ){
                     if ($employee->TypeEmployee == 'อาจารย์' || $employee->TypeEmployee == 'ผู้ช่วยศาสตราจารย์' || $employee->TypeEmployee == 'รองศาสตราจารย์' || $employee->TypeEmployee == 'ศาสตราจารย์') {
-                        if ($hrPositions[$emp[0]->id][0]->Type == 'เชิงรุก') {
-                            $data['full_look'] += 1;
-                        }else{
-                            $data['full_pun'] += 1;
+                        if (isset($hrPositions[$emp[0]->id][0])) {
+                            if ($hrPositions[$emp[0]->id][0]->Type == 'เชิงรุก') {
+                                $data['full_look'] += 1;
+                            } else {
+                                $data['full_pun'] += 1;
+                            }
                         }
                     } else {
-
-                        if ($hrPositions[$emp[0]->id][0]->Type == 'เชิงรุก') {
-                            $data['part_look'] += 1;
-                        }else{
-                            $data['part_pun'] += 1;
+                        if (isset($hrPositions[$emp[0]->id][0])) {
+                            if ($hrPositions[$emp[0]->id][0]->Type == 'เชิงรุก') {
+                                $data['part_look'] += 1;
+                            } else {
+                                $data['part_pun'] += 1;
+                            }
                         }
                     }
                 }
@@ -745,25 +813,8 @@ class ReportController extends Controller
             }
         }
 
-//        if ($emp[0]->TypeEmployee == 'อาจารย์') {
-//            if ($emp[0]->Type == 'เชิงรุก') {
-//                $data['full_look'] += 1;
-//            } else {
-//                $data['full_pun'] += 1;
-//            }
-//        } else {
-//            if ($emp[0]->Type == 'เชิงรุก') {
-//                $data['part_look'] += 1;
-//            } else {
-//                $data['part_pun'] += 1;
-//            }
-//        }
-
-
-//        dd($x);
-        return view('index3', [
+        return view('graph_hr_position', [
             'data' => $data,
-            'years' => $years
         ]);
     }
 
@@ -773,10 +824,17 @@ class ReportController extends Controller
         /// First work detect
 
         /// ปีที่ตรวจสอบสำเร็จการศุกษาหรือยัง
-        $startYear = $request->get('start_year', 2560);
-        $endYear = $request->get('end_year', 2563);
+        $startYear = $request->get('start_year');
+        if (!$startYear) {
+            $startYear = 2560;
+        }
+        $endYear = $request->get('end_year');
+        if(!$endYear) {
+            $endYear = (int)Carbon::now()->addYears(543)->format('Y');
+        }
         $years = [];
         $data = [];
+
 
         #
         $temp = ["เจ้าหน้าที่โครงการ", 'ผู้ประสานงานโครงการ', 'นักวิจัย', 'เจ้าหน้าที่ประสานงานโครงการ'];

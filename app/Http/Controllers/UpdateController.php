@@ -138,6 +138,9 @@ class UpdateController extends Controller
                     if ($row[0] == "" || $row[1] == ""){
                         continue;
                     }
+                    if ($row[14] == 'ผู้ช่วยศาสตราจารย์'){
+                        dd($row);
+                    }
                     $name = explode("\n",$row[1]);
 
                     $start_red_at = null;
@@ -171,6 +174,7 @@ class UpdateController extends Controller
                         'start_red_at' => \Carbon\Carbon::createFromFormat('d/m/y',$row[11])->addYears(543)->format('d/m/Y'),
                         'end_red_at' =>  \Carbon\Carbon::createFromFormat('d/m/y',$row[12])->addYears(543)->format('d/m/Y'),
                         'danger_colspan' => $danger_colspan,
+                        'exit_at' =>  \Carbon\Carbon::createFromFormat('d/m/y',$row[13])->addYears(543)->format('d/m/Y'),
 
 
 //            'test8' => $row[15],

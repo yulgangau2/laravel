@@ -134,7 +134,7 @@
                                     @endforeach
                                 </tr>
                                 <tr>
-                                    <td>ดอร์คเตอร์</td>
+                                    <td>ปริญญาเอก</td>
                                     @foreach($years as $i=> $year)
                                         <td class="text-center">
                                             {{$data[$year]['doctor'] }}

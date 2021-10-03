@@ -216,7 +216,7 @@
                                 <table class="table table-striped" style="width: 100%">
                                     <thead style="background-color: #A46B51;color: white;overflow: auto">
                                     <tr style="overflow: auto">
-                                        <th class="min-w-150 text-center">ชื่อ-สกุล</th>
+                                        <th class="min-w-200 text-center">ชื่อ-สกุล</th>
                                         <th class="min-w-100 text-center">ระยะเวลาที่เหลือ(วัน)</th>
                                         <th class="min-w-100 text-center">วันที่เริ่มงาน/วันที่ดำรงตำแหน่ง</th>
                                         <th class="min-w-100 text-center">วันที่บรรจุ</th>
@@ -229,7 +229,7 @@
                                     @if($users && count($users) >0)
                                         @foreach($users as $i=> $user)
                                             <tr>
-                                                <td class="min-w-150">{{$user['name']}}</td>
+                                                <td class="min-w-200">{{$user['name']}}</td>
                                                 <td class="min-w-100 text-center">{{$user['amount']}}</td>
                                                 <td class="min-w-100 text-center">{{$user['first_dat']}}</td>
                                                 <td class="min-w-100 text-center">{{$user['contain']}}</td>
@@ -253,7 +253,7 @@
                                         <th class="text-center">วันที่เริ่มงาน/วันที่ดำรงตำแหน่ง</th>
                                         <th class="text-center">วันที่บรรจุ</th>
                                         <th class="text-center">วันที่ถูกเลิกจ้าง</th>
-                                        {{--                                <th>ตำแหน่ง</th>--}}
+                                        {{--<th>ตำแหน่ง</th>--}}
                                         @foreach($years as $i => $year)
                                             <th style="width: 200px !important;min-width: 200px !important;">
                                                 {{$year}}
@@ -272,12 +272,12 @@
 
                                             <tr>
                                                 {{--                                        <td>{{$i+1}}</td>--}}
-                                                <td class="min-w-180">{{$user['name']}}</td>
+                                                <td class="min-w-200">{{$user['name']}}</td>
                                                 <td class="min-w-100 text-center">{{$user['amount']}}</td>
                                                 <td class="min-w-100 text-center">{{$user['first_dat']}}</td>
                                                 <td class="min-w-100 text-center">{{$user['contain']}}</td>
 
-                                                <td class="min-w-100 text-center">{{ $user['position']  == 'อาจารย์' ?  $user['danger_start_at']  : '-'}}</td>
+                                                <td class="min-w-100 text-center">{{ $user['position']  == 'อาจารย์' ?  $user['exit_at']  : '-'}}</td>
                                                 {{--                                        <td class="min-w-100">{{$user['position']}}</td>--}}
 
                                                 @foreach($years as $i => $year)

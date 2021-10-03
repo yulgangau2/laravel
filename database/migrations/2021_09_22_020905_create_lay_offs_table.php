@@ -30,6 +30,8 @@ class CreateLayOffsTable extends Migration
             $table->string('start_red_at')->nullable();
             $table->string('end_red_at')->nullable();
             $table->string('danger_colspan')->nullable();
+
+            $table->string('exit_at')->nullable();
             $table->timestamps();
         });
     }
