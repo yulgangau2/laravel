@@ -653,6 +653,7 @@ class UpdateController extends Controller
 
                     $json = $this->getData('https://mis-api.cmu.ac.th/hr/v2.2/employees/personalinfo', $orgId, $perId, $token1);
 
+                    dd($json);
                     $user = Employee::query()
                         ->where('personalID', $json['personalID'])
                         ->orWhere('emailCMU', $json['emailCMU'])
@@ -749,7 +750,6 @@ class UpdateController extends Controller
                     $update->save();
                     DB::commit();
 
-                    dd("work");
 //                    return redirect()->back()->with([
 //                        'success' => true,
 //                        'message' => "อัพเดทข้อมูลสำเร็จ"
