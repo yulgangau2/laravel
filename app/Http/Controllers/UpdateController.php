@@ -647,8 +647,8 @@ class UpdateController extends Controller
 
             if ($perId) {
 
-//                DB::beginTransaction();
-//                try {
+                DB::beginTransaction();
+                try {
                     //1
 
                     $json = $this->getData('https://mis-api.cmu.ac.th/hr/v2.2/employees/personalinfo', $orgId, $perId, $token1);
@@ -747,19 +747,21 @@ class UpdateController extends Controller
                     }
                     $update->updated_at = Carbon::now();
                     $update->save();
-//                    DB::commit();
+                    DB::commit();
+
+                    dd("work");
 //                    return redirect()->back()->with([
 //                        'success' => true,
 //                        'message' => "อัพเดทข้อมูลสำเร็จ"
 //                    ]);
 
-//                } catch (\Exception $exception) {
-//                    DB::rollBack();
-//                    return redirect()->back()->withErrors([
-//                        'success' => false,
-//                        'message' => $exception->getMessage()
-//                    ]);
-//                }
+                } catch (\Exception $exception) {
+                    DB::rollBack();
+                    return redirect()->back()->withErrors([
+                        'success' => false,
+                        'message' => $exception->getMessage()
+                    ]);
+                }
 
             }
         }
