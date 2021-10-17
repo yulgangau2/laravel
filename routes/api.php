@@ -76,10 +76,18 @@ Route::get('get_token',function (Request $request){
 
     $token =  $obj['access_token'];
 
+    dd($token);
 
 
     echo $token;
 })->name('get_token');
+
+
+Route::post('upload_layoff', [\App\Http\Controllers\Api\UpdateController::class, 'upload_layoff'])->name('api_upload_layoff');
+
+//update Employee
+Route::post('update_employee', [\App\Http\Controllers\Api\UpdateController::class, 'update_employee'])->name('api_update_employee');
+
 
 //update Personal Info
 Route::post('update_personal_info', [\App\Http\Controllers\Api\UpdateController::class, 'update_personal_info'])->name('api_update_personal_info');
@@ -89,6 +97,7 @@ Route::post('update_history_worker', [\App\Http\Controllers\Api\UpdateController
 
 //update workcurrentinfo //check
 Route::post('update_work_current_info', [\App\Http\Controllers\Api\UpdateController::class, 'update_work_current_info'])->name('api_update_work_current_info');
+
 
 
 //update education

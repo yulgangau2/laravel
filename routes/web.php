@@ -14,25 +14,27 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::get('', [\App\Http\Controllers\ReportController::class, 'index2'])->name('index5');
+Route::get('', [\App\Http\Controllers\ReportController::class, 'employee'])->name('index');
 
 
 Route::group(['prefix' => 'admin'], function () {
 //    Route::get('', [\App\Http\Controllers\ReportController::class, 'index5'])->name('index5');
 
-    Route::get('employee', [\App\Http\Controllers\ReportController::class, 'index5'])->name('index5');
+    Route::get('employee', [\App\Http\Controllers\ReportController::class, 'employee'])->name('employee');
     Route::get('view/{id}', [\App\Http\Controllers\ReportController::class, 'view'])->name('view');
 
-    Route::get('', [\App\Http\Controllers\ReportController::class, 'index2'])->name('index');
-    Route::get('layoff', [\App\Http\Controllers\ReportController::class, 'index2'])->name('index2');
+    Route::get('layoff', [\App\Http\Controllers\ReportController::class, 'layoff'])->name('layoff');
+
+
 //    Route::get('index2', [\App\Http\Controllers\ReportController::class, 'index2'])->name('index2');
-    Route::get('employee_dashboard', [\App\Http\Controllers\ReportController::class, 'index3'])->name('index3');
+    Route::get('employee_dashboard', [\App\Http\Controllers\ReportController::class, 'employee_dashboard'])->name('employee_dashboard');
     Route::get('graph_hr_position', [\App\Http\Controllers\ReportController::class, 'graph_hr_position'])->name('graph_hr_position');
-    Route::get('education_dashboard', [\App\Http\Controllers\ReportController::class, 'index4'])->name('index4');
+    Route::get('education_dashboard', [\App\Http\Controllers\ReportController::class, 'education_dashboard'])->name('education_dashboard');
 
 
     Route::get('setting', [\App\Http\Controllers\ReportController::class, 'setting'])->name('setting');
 });
+
 
 
 Route::group(['prefix'=> 'update'],function(){

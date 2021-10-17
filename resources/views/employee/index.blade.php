@@ -39,7 +39,7 @@
             </div>
 
             <div class="card-body">
-                <form action="{{route('index5')}}" method="get">
+                <form action="{{route('employee')}}" method="get">
 
                     <div class="row">
                         <div class="col-md-5 col-xs-12 col-sm-12">
@@ -78,52 +78,58 @@
                     </div>
                 </form>
 
-                <div class="col-lg-12 col-md-12 col-xl-12" style="overflow: auto">
-                    <div class="form-group">
-                        <table class="table table-striped" style="overflow: auto">
-                            <thead style="background-color: #A46B51;color:white;overflow: auto">
-                            <tr style="overflow: auto">
-                                <th>ลำดับ</th>
-                                <th>ชื่อ-สกุล</th>
-                                <th>ตำแหน่ง</th>
-                                <th>หน่วยงาน</th>
-                            </tr>
-                            </thead>
-
-                            <tbody>
-                            @if($users && count($users) >0)
-                                {{--                            @endforeach--}}
-                                @foreach($users as $i=> $user)
-                                    @if(isset($user['id'] ))
-                                        <tr>
-                                            <td>{{$user['no']}}</td>
-                                            <td>
-                                                <a href="{{route('view',['id' => $user['id'] ] )}}">
-                                                    {{$user['fullname']}}
-                                                </a>
-                                            </td>
-                                            <td>{{$user['position']}}</td>
-                                            <td>{{$user['agency']}}</td>
-                                        </tr>
-                                    @else
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td>{{$user['position']}}</td>
-                                            <td></td>
-                                        </tr>
-                                    @endif
-                                @endforeach
-
-                            @else
-                                <tr>
-                                    <td class="text-center" colspan="4">No data Record</td>
+{{--                <div class="col-md-2"></div>--}}
+                <div class="col-md-12">
+                    <div class="col-lg-12 col-md-12 col-xl-12" style="overflow: auto">
+                        <div class="form-group">
+                            <table class="table table-striped" style="overflow: auto">
+                                <thead style="background-color: #A46B51;color:white;overflow: auto">
+                                <tr style="overflow: auto">
+                                    <th>ลำดับ</th>
+                                    <th>ชื่อ-สกุล</th>
+                                    <th>ตำแหน่ง</th>
+                                    <th>หน่วยงาน</th>
                                 </tr>
-                            @endif
-                            </tbody>
-                        </table>
+                                </thead>
+
+                                <tbody>
+                                @if($users && count($users) >0)
+                                    {{--                            @endforeach--}}
+                                    @foreach($users as $i=> $user)
+                                        @if(isset($user['id'] ))
+                                            <tr>
+                                                <td>{{$user['no']}}</td>
+                                                <td>
+                                                    <a href="{{route('view',['id' => $user['id'] ] )}}">
+                                                        {{$user['fullName']}}
+                                                    </a>
+                                                </td>
+                                                <td></td>
+                                                <td></td>
+{{--                                                <td>{{$user['position']}}</td>--}}
+{{--                                                <td>{{$user['agency']}}</td>--}}
+                                            </tr>
+                                        @else
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td>{{$user['position']}}</td>
+                                                <td></td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+
+                                @else
+                                    <tr>
+                                        <td class="text-center" colspan="4">No data Record</td>
+                                    </tr>
+                                @endif
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
+{{--                <div class="col-md-2"></div>--}}
             </div>
         </div>
 

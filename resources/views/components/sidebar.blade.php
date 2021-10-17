@@ -7,29 +7,29 @@
         <div id="sidebar-menu">
 
             <ul>
-{{--                <li class="submenu">--}}
-{{--                    <a class="{{--}}
-{{--                        \Illuminate\Support\Facades\Route::currentRouteName() == 'index5'  ||--}}
-{{--                        \Illuminate\Support\Facades\Route::currentRouteName() == 'view'--}}
-{{--                    ? 'active' : '' }}"--}}
-{{--                       href="{{route('index5')}}"><i class="fa fa-fw fa-bookmark"></i>--}}
-{{--                        <span>ข้อมูลพนักงาน</span>--}}
-{{--                    </a>--}}
-{{--                </li>--}}
+                <li class="submenu">
+                    <a class="{{
+                        \Illuminate\Support\Facades\Route::currentRouteName() == 'employee'  ||
+                        \Illuminate\Support\Facades\Route::currentRouteName() == 'view'
+                    ? 'active' : '' }}"
+                       href="{{route('employee')}}"><i class="fa fa-fw fa-bookmark"></i>
+                        <span>ข้อมูลพนักงาน</span>
+                    </a>
+                </li>
                 <li class="submenu">
                     <a class="{{
                         \Illuminate\Support\Facades\Route::currentRouteName() == 'index' ||
-                        \Illuminate\Support\Facades\Route::currentRouteName() == 'index2'
+                        \Illuminate\Support\Facades\Route::currentRouteName() == 'layoff'
                             ? 'active' : '' }}"
 
-                       href="{{route('index2')}}"><i class="fa fa-fw fa-exchange"></i>
+                       href="{{route('layoff')}}"><i class="fa fa-fw fa-exchange"></i>
                         <span>บุคลากรใกล้ถูกเลิกจ้าง</span>
                     </a>
                 </li>
 
                 <li class="submenu">
-                    <a class="{{ \Illuminate\Support\Facades\Route::currentRouteName() == 'index3' ? 'active' : '' }}"
-                       href="{{route('index3')}}"><i class="fa fa-fw fa-terminal"></i>
+                    <a class="{{ \Illuminate\Support\Facades\Route::currentRouteName() == 'employee_dashboard' ? 'active' : '' }}"
+                       href="{{route('employee_dashboard')}}"><i class="fa fa-fw fa-terminal"></i>
                         <span>ข้อมูลพนักงานประจำ/ชั่วคราว</span>
                     </a>
                 </li>
@@ -40,8 +40,8 @@
                     </a>
                 </li>
                 <li class="submenu">
-                    <a class="{{ \Illuminate\Support\Facades\Route::currentRouteName() == 'index4' ? 'active' : '' }}"
-                       href="{{route('index4')}}"><i class="fa fa-fw fa-windows"></i>
+                    <a class="{{ \Illuminate\Support\Facades\Route::currentRouteName() == 'education_dashboard' ? 'active' : '' }}"
+                       href="{{route('education_dashboard')}}"><i class="fa fa-fw fa-windows"></i>
                         <span>คุณวุฒิบุคลากรสายวิชาการ</span>
                     </a>
                 </li>
@@ -55,11 +55,11 @@
 {{--                    <a class="active" href="index.html"><i class="fa fa-fw fa-bars"></i><span> Dashboard </span> </a>--}}
 {{--                </li>--}}
 
-                <li class="submenu">
-                    <a href="#"><i class="fa fa-fw fa-long-arrow-left"></i>
-                        <span>ออกจากระบบ</span>
-                    </a>
-                </li>
+{{--                <li class="submenu">--}}
+{{--                    <a href="#"><i class="fa fa-fw fa-long-arrow-left"></i>--}}
+{{--                        <span>ออกจากระบบ</span>--}}
+{{--                    </a>--}}
+{{--                </li>--}}
 
 {{--                <li class="submenu">--}}
 {{--                    <a href="#"><i class="fa fa-fw fa-table"></i> <span> Tables </span> <span class="menu-arrow"></span></a>--}}

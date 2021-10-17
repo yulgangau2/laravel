@@ -9,6 +9,20 @@
             /*border: solid black 1px;*/
         }
 
+        /*table thead tr{*/
+        /*    display:block;*/
+        /*}*/
+
+        /*table th,table td{*/
+        /*    width:100px;//fixed width*/
+        /*}*/
+
+
+        /*table  tbody{*/
+        /*    display:block;*/
+        /*    height:600px;*/
+        /*    overflow:auto;*/
+        /*}*/
 
 
         .tscroll table th:first-child {
@@ -178,7 +192,10 @@
 
         <div class="card" style="width: 100%">
             <div class="card-header">
-                <h2><i class="fa fa-line-chart"></i>รายงานข้อมูลอาจารย์ที่ใกล้จะถูกเลิกจ้าง</h2>
+                <h2 class="text-center">
+                    <i class="fa fa-line-chart"></i>
+                    รายงานข้อมูลอาจารย์ที่ใกล้จะถูกเลิกจ้าง
+                </h2>
             </div>
 
 
@@ -198,10 +215,10 @@
                                     <div style="float: right">
                                         <a
                                             class="{{request()->get('type') == 'month' ? 'type-active' :'type'}}"
-                                            href="{{route('index2',['type' => 'month'])}}">รูปแบบตาราง</a>
+                                            href="{{route('layoff',['type' => 'month'])}}">รูปแบบตาราง</a>
                                         <a
                                             class="{{request()->get('type') != 'month' ? 'type-active' :'type'}}"
-                                            href="{{route('index2',['type' => 'year'])}}">รูปแบบกราฟ</a>
+                                            href="{{route('layoff',['type' => 'year'])}}">รูปแบบกราฟ</a>
                                     </div>
                                 </div>
                             </div>
@@ -213,14 +230,15 @@
 
                         @if(request()->get('type') && request()->get('type') == 'month')
                             <div class="col-lg-12 col-md-12 col-xl-12" style="overflow: auto">
-                                <table class="table table-striped" style="width: 100%">
+                                <table class="table table-striped" style="width: 100%;height: 300px;max-height: 300px !important;">
                                     <thead style="background-color: #A46B51;color: white;overflow: auto">
                                     <tr style="overflow: auto">
-                                        <th class="min-w-200 text-center">ชื่อ-สกุล</th>
+                                        <th class="text-center" style="max-width: 100px;width: 80px;min-width: 100px!important;">ชื่อ-สกุล</th>
                                         <th class="min-w-100 text-center">ระยะเวลาที่เหลือ(วัน)</th>
                                         <th class="min-w-100 text-center">วันที่เริ่มงาน/วันที่ดำรงตำแหน่ง</th>
                                         <th class="min-w-100 text-center">วันที่บรรจุ</th>
                                         <th class="min-w-100 text-center">วันที่ถูกเลิกจ้าง</th>
+                                        <th class="min-w-100 text-center">จำนวนวันก่อนไม่ได้เลื่อนเงินเดือน</th>
                                         {{--                            <th>ตำแหน่ง</th>--}}
                                     </tr>
                                     </thead>
@@ -229,11 +247,12 @@
                                     @if($users && count($users) >0)
                                         @foreach($users as $i=> $user)
                                             <tr>
-                                                <td class="min-w-200">{{$user['name']}}</td>
+                                                <td class=""  style="max-width: 80px;width: 100px;min-width: 100px!important;">{{$user['name']}}</td>
                                                 <td class="min-w-100 text-center">{{$user['amount']}}</td>
                                                 <td class="min-w-100 text-center">{{$user['first_dat']}}</td>
                                                 <td class="min-w-100 text-center">{{$user['contain']}}</td>
                                                 <td class="min-w-100 text-center">{{ $user['position']  == 'อาจารย์' ?  $user['danger_start_at']  : '-'}}</td>
+                                                <td class="min-w-100 text-center">{{$user['day_left'] ? $user['day_left'] :'-'}}</td>
                                                 {{--                                    <td class="min-w-100 text-center">{{ $user['position'] == 'อาจารย์' ? $user['danger_end_at']  : '-'}}</td>--}}
                                                 {{--                                    <td class="min-w-150">{{$user['อาจารย์']}}22</td>--}}
                                             </tr>
@@ -255,9 +274,8 @@
                                         <th class="text-center">วันที่ถูกเลิกจ้าง</th>
                                         {{--<th>ตำแหน่ง</th>--}}
                                         @foreach($years as $i => $year)
-                                            <th style="width: 200px !important;min-width: 200px !important;">
+                                            <th style="width: 200px !important;min-width: 130px !important;">
                                                 {{$year}}
-
                                                 {{--                                    <a href="{{route('index',['type' => 'year'])}}"--}}
                                                 {{--                                    {{$year}}--}}
                                                 {{--                                    </a>--}}
@@ -270,7 +288,7 @@
                                     @if($users && count($users) >0)
                                         @foreach($users as $i=> $user)
 
-                                            <tr>
+                                            <tr class="scroll_container">
                                                 {{--                                        <td>{{$i+1}}</td>--}}
                                                 <td class="min-w-200">{{$user['name']}}</td>
                                                 <td class="min-w-100 text-center">{{$user['amount']}}</td>
@@ -298,6 +316,7 @@
                                                     class="text-center">
                                                     {{$user['warning_start_at']}} - {{$user['warning_end_at']}}
                                                 </td>
+
                                                 @if($user['position'] == 'อาจารย์')
                                                     <td style="background-color:#FF284B;color: white"
                                                         colspan="{{$user['danger_colspan']}}"
@@ -333,13 +352,26 @@
                                 </table>
                             </div>
                         @endif
-                        <p style="color: black;">หมายเหตุ</p>
-                        <p style="color: #64864A">วันที่มีคุณสมบัติครบในการขอตำแหน่ง (ดึงข้อมูลวันที่บรรจุเป็นประจำ + 1ปี) เช่น วันที่บรรจุเป็นพนักงานประจำ 14 ก.ค. 2563 วันที่แสดงในช่องสีเขียว 14 ก.ค. 2564 (ต้องผ่านทดลองงานแล้ว จึงจะขอตำแหน่งได้)</p>
-                        <p style="color: #FFC700;">วันที่ใกล้ถึง การไม่ได้เลื่อนเงินเดือน แจ้งก่อนล่วงหน้า 1 ปี</p>
-                        <p style="color: #FF284B;">วันที่เริ่มต้น การไม่ได้เลื่อนเงินเดือน จนถึง วันเลิกจ้างเมื่อสิ้นสุดสีแดง (ดึงข้อมูลเริ่มตั้งแต่ วันที่บรรจุพนักงานมหาวิทยาลัยประจำ + 5 ปี ) และสิ้นสุดการจ้าง</p>
+                        <p style="color: black;font-size: 18px;">หมายเหตุ</p>
+                        <p style="color: #64864A;font-size: 18px;">วันที่มีคุณสมบัติครบในการขอตำแหน่ง (ดึงข้อมูลวันที่บรรจุเป็นประจำ + 1ปี) เช่น วันที่บรรจุเป็นพนักงานประจำ 14 ก.ค. 2563 วันที่แสดงในช่องสีเขียว 14 ก.ค. 2564 (ต้องผ่านทดลองงานแล้ว จึงจะขอตำแหน่งได้)</p>
+                        <p style="color: #FFC700;font-size: 18px;">วันที่ใกล้ถึง การไม่ได้เลื่อนเงินเดือน แจ้งก่อนล่วงหน้า 1 ปี</p>
+                        <p style="color: #FF284B;font-size: 18px;">วันที่เริ่มต้น การไม่ได้เลื่อนเงินเดือน จนถึง วันเลิกจ้างเมื่อสิ้นสุดสีแดง (ดึงข้อมูลเริ่มตั้งแต่ วันที่บรรจุพนักงานมหาวิทยาลัยประจำ + 5 ปี ) และสิ้นสุดการจ้าง</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+@endsection
+
+
+@section('script')
+    <script>
+        window.addEventListener("load", function(e) {
+            var container = document.querySelector(".scroll_container");
+            var middle = container.children[Math.floor((container.children.length - 1) / 2)];
+            console.log(middle)
+            container.scrollLeft = middle.offsetLeft +
+                middle.offsetWidth / 2 - container.offsetWidth / 2;
+        });
+    </script>
 @endsection

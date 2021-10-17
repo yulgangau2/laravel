@@ -440,7 +440,7 @@ class ReportController extends Controller
 
     }
 
-    public function index2(Request $request)
+    public function layoff(Request $request)
     {
         $leyoffs = LayOff::query()
             ->get();
@@ -448,78 +448,89 @@ class ReportController extends Controller
         $first_year = Carbon::now()->addYears(543)->subYears(5);
         $end_year = Carbon::now()->addYears(543);
 
-        foreach ($leyoffs as $i => $layoff) {
-            $now = Carbon::now()->addYears(543);
+        if ($leyoffs && count($leyoffs) > 0) {
+            foreach ($leyoffs as $i => $layoff) {
+                $now = Carbon::now()->addYears(543);
 
 
 //            $s_year = Carbon::createFromFormat('d/m/Y', $layoff->start_green_at)->format('Y');
-            $s_year = Carbon::createFromFormat('d/m/Y', $layoff->start_green_at)->addYear()->format('Y');
+                $s_year = Carbon::createFromFormat('d/m/Y', $layoff->start_green_at)->addYear()->format('Y');
 
-            if ($layoff->end_red_at) {
-                $e = Carbon::createFromFormat('d/m/Y', $layoff->exit_at);
-                $amount = $now->diffInDays($e);
-                $e_year = Carbon::createFromFormat('d/m/Y', $layoff->end_red_at)->format('Y');
-            } else {
-                $e = Carbon::createFromFormat('d/m/Y', $layoff->exit_at);
+                if ($layoff->end_red_at) {
+                    $e = Carbon::createFromFormat('d/m/Y', $layoff->exit_at);
+                    $amount = $now->diffInDays($e);
+                    $e_year = Carbon::createFromFormat('d/m/Y', $layoff->end_red_at)->format('Y');
+                } else {
+                    $e = Carbon::createFromFormat('d/m/Y', $layoff->exit_at);
 //                $e = Carbon::createFromFormat('d/m/Y', $layoff->end_yellow_at);
-                $amount = $now->diffInDays($e);
-                $e_year = Carbon::createFromFormat('d/m/Y', $layoff->end_yellow_at)->format('Y');
-            }
+                    $amount = $now->diffInDays($e);
+                    $e_year = Carbon::createFromFormat('d/m/Y', $layoff->end_yellow_at)->format('Y');
+                }
 
 
-            $safe_colspan = ((Carbon::createFromFormat('d/m/Y', $layoff->start_green_at)->addYear()->diffInDays(Carbon::createFromFormat('d/m/Y', $layoff->end_green_at))) / 365);
-            $warning_colspan = ((Carbon::createFromFormat('d/m/Y', $layoff->start_yellow_at)->diffInDays(Carbon::createFromFormat('d/m/Y', $layoff->end_yellow_at))) / 365);
-            $danger_colspan = ((Carbon::createFromFormat('d/m/Y', $layoff->start_red_at)->diffInDays(Carbon::createFromFormat('d/m/Y', $layoff->end_red_at))) / 365);
+                $safe_colspan = ((Carbon::createFromFormat('d/m/Y', $layoff->start_green_at)->addYear()->diffInDays(Carbon::createFromFormat('d/m/Y', $layoff->end_green_at))) / 365);
+                $warning_colspan = ((Carbon::createFromFormat('d/m/Y', $layoff->start_yellow_at)->diffInDays(Carbon::createFromFormat('d/m/Y', $layoff->end_yellow_at))) / 365);
+                $danger_colspan = ((Carbon::createFromFormat('d/m/Y', $layoff->start_red_at)->diffInDays(Carbon::createFromFormat('d/m/Y', $layoff->end_red_at))) / 365);
 
 
-            $safe_colspan = (int)Carbon::createFromFormat('d/m/Y', $layoff->end_green_at)->format('Y') - (int)Carbon::createFromFormat('d/m/Y', $layoff->start_green_at)->addYear()->format('Y');
-            $warning_colspan = (int)Carbon::createFromFormat('d/m/Y', $layoff->end_yellow_at)->format('Y') - (int)Carbon::createFromFormat('d/m/Y', $layoff->start_yellow_at)->format('Y');
-            $danger_colspan = (int)Carbon::createFromFormat('d/m/Y', $layoff->end_red_at)->format('Y') - (int)Carbon::createFromFormat('d/m/Y', $layoff->start_red_at)->format('Y');
+                $safe_colspan = (int)Carbon::createFromFormat('d/m/Y', $layoff->end_green_at)->format('Y') - (int)Carbon::createFromFormat('d/m/Y', $layoff->start_green_at)->addYear()->format('Y');
+                $warning_colspan = (int)Carbon::createFromFormat('d/m/Y', $layoff->end_yellow_at)->format('Y') - (int)Carbon::createFromFormat('d/m/Y', $layoff->start_yellow_at)->format('Y');
+                $danger_colspan = (int)Carbon::createFromFormat('d/m/Y', $layoff->end_red_at)->format('Y') - (int)Carbon::createFromFormat('d/m/Y', $layoff->start_red_at)->format('Y');
 
 
-            if ($layoff->firstname . ' ' . $layoff->lastname == "นางสาวธีราพร แซ่แห่ว") {
-//                dd($safe_colspan,$warning_colspan,$danger_colspan,$layoff);
-            }
+//                if ($layoff->firstname . ' ' . $layoff->lastname == "นางสาวธีราพร แซ่แห่ว") {
+////                dd($safe_colspan,$warning_colspan,$danger_colspan,$layoff);
+//                }
 
-            $tmp = [
-                'name' => $layoff->firstname . ' ' . $layoff->lastname,
-                'contain' => $layoff->start_green_at,
-                'safe_colspan' => $safe_colspan,
+                $tmp = [
+                    'name' => $layoff->firstname . ' ' . $layoff->lastname,
+                    'contain' => $layoff->contain,
+                    'safe_colspan' => $safe_colspan,
 //                'safe_colspan' => $layoff->safe_colspan,
 //                'safe_start_at' => $layoff->start_green_at,
-                'safe_start_at' => Carbon::createFromFormat('d/m/Y', $layoff->start_green_at)->addYear()->format('d/m/Y'),
-                'safe_end_at' => $layoff->end_green_at,
-                'warning_start_at' => $layoff->start_yellow_at,
-                'warning_end_at' => $layoff->end_yellow_at,
-                'warning_colspan' => $warning_colspan,
+                    'safe_start_at' => Carbon::createFromFormat('d/m/Y', $layoff->start_green_at)->addYear()->format('d/m/Y'),
+                    'safe_end_at' => $layoff->end_green_at,
+                    'warning_start_at' => $layoff->start_yellow_at,
+                    'warning_end_at' => $layoff->end_yellow_at,
+                    'warning_colspan' => $warning_colspan,
 //                'warning_colspan' => $layoff->warning_colspan,
-                'danger_start_at' => $layoff->start_red_at,
-                'danger_end_at' => $layoff->end_red_at,
-                'danger_colspan' => $danger_colspan,
+                    'danger_start_at' => $layoff->start_red_at,
+                    'danger_end_at' => $layoff->end_red_at,
+                    'danger_colspan' => $danger_colspan,
 //                'danger_colspan' => $layoff->danger_colspan,
-                'position' => $layoff->position,
-                'first_dat' => $layoff->first_day,
-                'amount' => $amount,
-                'year_start' => (int)$s_year,
-                'exit_at' => $layoff->exit_at
-            ];
+                    'position' => $layoff->position,
+                    'first_dat' => $layoff->first_day,
+                    'amount' => $amount,
+                    'year_start' => (int)$s_year,
+                    'exit_at' => $layoff->exit_at,
+                    'day_left' => $now->diffInDays(Carbon::createFromFormat('d/m/Y',$layoff->end_yellow_at))
+                ];
 
-            $users[] = $tmp;
+                if ($layoff->position == 'อาจารย์'){
+                    $users[] = $tmp;
+                }else {
+                    $users2[] = $tmp;
+                }
 
 
-            if ($first_year > $s_year) {
-                $first_year = $s_year;
-            }
+                if ($first_year > $s_year) {
+                    $first_year = $s_year;
+                }
 
-            if ($end_year < $e_year) {
-                $end_year = $e_year;
+                if ($end_year < $e_year) {
+                    $end_year = $e_year;
+                }
             }
         }
 
 
 
         if ($leyoffs && count($leyoffs) > 0) {
-            $users = $this->orderAmount($users);
+            if (isset($users)){
+                $users = $this->orderAmount($users);
+            }else{
+                $users = [];
+            }
         }else{
             $end_year = (int)$end_year->format('Y');
             $first_year = (int)$first_year->format('Y');
@@ -529,14 +540,15 @@ class ReportController extends Controller
             $years[] = $i;
         }
 
+        $users = array_merge($users,$users2);
 
-        return view('new_logic', [
+        return view('layoff', [
             'users' => isset($users) ? $users : [],
             'years' => $years,
         ]);
     }
 
-    public function index3(Request $request)
+    public function employee_dashboard(Request $request)
     {
         $temp = ["เจ้าหน้าที่โครงการ", 'ผู้ประสานงานโครงการ', 'นักวิจัย', 'เจ้าหน้าที่ประสานงานโครงการ'];
         $employees = Employee::query()
@@ -610,9 +622,9 @@ class ReportController extends Controller
                         if ($employee->EmployeeTypeNameTha == 'พนักงานมหาวิทยาลัยประจำ') {
                             if ($employee->PositionName == 'อาจารย์' || $employee->PositionName == 'ผู้ช่วยศาสตราจารย์' || $employee->PositionName == 'รองศาสตราจารย์' || $employee->PositionName == 'ศาสตราจารย์') {
                                 $data[$y]['full_academic'] += 1;
-                                if ($y == 2560) {
-                                    $x[] = $employee->employee->FullName;
-                                }
+//                                if ($y == 2563) {
+//                                    $x[] = $employee->employee->FullName;
+//                                }
                             } else {
                                 $data[$y]['full_support'] += 1;
 
@@ -621,6 +633,7 @@ class ReportController extends Controller
                             if ($employee->PositionName == 'อาจารย์' || $employee->PositionName == 'ผู้ช่วยศาสตราจารย์' || $employee->PositionName == 'รองศาสตราจารย์' || $employee->PositionName == 'ศาสตราจารย์') {
                                 $data[$y]['part_academic'] += 1;
                             } else {
+
                                 $data[$y]['part_support'] += 1;
                             }
                         }
@@ -634,23 +647,29 @@ class ReportController extends Controller
                             ->where('year', $y)
                             ->where('employee_id', $emp->id)
                             ->first();
+
                         if ($firstWork <= $y && !$hisPoint) {
                             if ($employee->employeeTypeNameTha == 'พนักงานมหาวิทยาลัยประจำ') {
-                                if ($employee->TypeEmployee == 'อาจารย์' || $employee->TypeEmployee == 'ผู้ช่วยศาสตราจารย์' || $employee->TypeEmployee == 'รองศาสตราจารย์' || $employee->TypeEmployee == 'ศาสตราจารย์') {
+                                if ($employee->PositionName == 'อาจารย์' || $employee->PositionName == 'ผู้ช่วยศาสตราจารย์' || $employee->PositionName == 'รองศาสตราจารย์' || $employee->PositionName == 'ศาสตราจารย์') {
                                     $data[$y]['full_academic'] += 1;
-                                    if ($y == 2560) {
-                                        $x[] = $employee->FullName;
-                                    }
+//                                    if ($y == 2560) {
+//                                        $x[] = $employee->FullName;
+//                                    }
 
                                 } else {
                                     $data[$y]['full_support'] += 1;
+                                    if ($y == 2564) {
+                                        $x[] = $employee->FullName;
+                                    }
                                 }
                             } else if ($employee->employeeTypeNameTha == 'พนักงานมหาวิทยาลัยชั่วคราว') {
-                                if ($employee->TypeEmployee == 'อาจารย์' || $employee->TypeEmployee == 'ผู้ช่วยศาสตราจารย์' || $employee->PositionName == 'รองศาสตราจารย์' || $employee->TypeEmployee == 'ศาสตราจารย์') {
+                                if ($employee->PositionName == 'อาจารย์' || $employee->PositionName == 'ผู้ช่วยศาสตราจารย์' || $employee->PositionName == 'รองศาสตราจารย์' || $employee->PositionName == 'ศาสตราจารย์') {
                                     $data[$y]['part_academic'] += 1;
 
                                 } else {
-
+//                                    if ($y == 2563) {
+//                                        $x[] = $employee->employee->FullName;
+//                                    }
                                     $data[$y]['part_support'] += 1;
                                 }
                             }
@@ -700,7 +719,7 @@ class ReportController extends Controller
 
 
 //        dd($x);
-        return view('index3', [
+        return view('employee_dashboard', [
             'data' => $data,
             'years' => $years
         ]);
@@ -720,14 +739,14 @@ class ReportController extends Controller
             ->whereNotIn('PositionName', $temp)
             ->pluck('id');
 
-        $emps = Employee::query()
-            ->whereIn('id', $ids)
-            ->get();
+//        $emps = Employee::query()
+//            ->whereIn('id', $ids)
+//            ->get();
 
-
+        $x = [];
         $startYear = $request->get('start_year');
         if (!$startYear) {
-            $startYear = 2560;
+            $startYear = (int)Carbon::now()->format('Y');
         }
         $endYear = $request->get('end_year');
         if(!$endYear) {
@@ -761,51 +780,58 @@ class ReportController extends Controller
         foreach ($employees as $id => $emp) {
             $employee = isset($history[$searchYear][$id]) ? $history[$searchYear][$id][0] : null;
 
+
             if ($employee) {
 
                 if ($employee->PositionName == 'อาจารย์' || $employee->PositionName == 'ผู้ช่วยศาสตราจารย์' || $employee->PositionName == 'รองศาสตราจารย์' || $employee->PositionName == 'ศาสตราจารย์') {
-                    if (isset($hrPositions[$emp[0]->id][0])) {
-                        if ($hrPositions[$emp[0]->id][0]->Type == 'เชิงรุก') {
+                    if (isset($hrPositions[$id][0])) {
+                        if ($hrPositions[$id][0]->Type == 'เชิงรุก') {
+//                            $x[] = $id;
                             $data['full_look'] += 1;
                         } else {
                             $data['full_pun'] += 1;
                         }
                     }
                 } else {
-                    if (isset($hrPositions[$emp[0]->id][0])) {
-                        if ($hrPositions[$emp[0]->id][0] == 'เชิงรุก') {
+                    if (isset($hrPositions[$id][0])) {
+                        if ($hrPositions[$id][0]->Type == 'เชิงรุก') {
                             $data['part_look'] += 1;
-                        } else {
+                        } else if ($hrPositions[$id][0]->Type== 'พันธกิจ') {
                             $data['part_pun'] += 1;
                         }
+//                        if ($id == 258){
+//                            dd($abc,$hrPositions[$id][0]);
+//                        }
                     }
                 }
             } else {
 
-                $employee = Employee::query()->where('id', $emp[0]->id)->first();
+                $employee = Employee::query()->where('id', $id)->first();
 
                 $firstWork = (int)Carbon::createFromFormat('d/m/Y',$employee->FirstWorkDate)->format('Y');
                 $hisPoint = EmployeeHistoryWork::query()
                     ->where('year',$searchYear)
-                    ->where('employee_id',$employee->id)
+                    ->where('employee_id',$id)
                     ->first();
 
 
 
                 if ($firstWork <= $searchYear && !$hisPoint ){
-                    if ($employee->TypeEmployee == 'อาจารย์' || $employee->TypeEmployee == 'ผู้ช่วยศาสตราจารย์' || $employee->TypeEmployee == 'รองศาสตราจารย์' || $employee->TypeEmployee == 'ศาสตราจารย์') {
-                        if (isset($hrPositions[$emp[0]->id][0])) {
-                            if ($hrPositions[$emp[0]->id][0]->Type == 'เชิงรุก') {
+
+                    if ($employee->PositionName	 == 'อาจารย์' || $employee->PositionName	 == 'ผู้ช่วยศาสตราจารย์' || $employee->PositionName	 == 'รองศาสตราจารย์' || $employee->PositionName	 == 'ศาสตราจารย์') {
+                        if (isset($hrPositions[$id][0])) {
+                            if ($hrPositions[$id][0]->Type == 'เชิงรุก') {
                                 $data['full_look'] += 1;
                             } else {
                                 $data['full_pun'] += 1;
                             }
                         }
                     } else {
-                        if (isset($hrPositions[$emp[0]->id][0])) {
-                            if ($hrPositions[$emp[0]->id][0]->Type == 'เชิงรุก') {
+                        if (isset($hrPositions[$id][0])) {
+                            if ($hrPositions[$id][0]->Type == 'เชิงรุก') {
                                 $data['part_look'] += 1;
                             } else {
+//                                $x[] = $employee->FullName;
                                 $data['part_pun'] += 1;
                             }
                         }
@@ -815,12 +841,13 @@ class ReportController extends Controller
             }
         }
 
+//        dd($x);
         return view('graph_hr_position', [
             'data' => $data,
         ]);
     }
 
-    public function index4(Request $request)
+    public function education_dashboard(Request $request)
     {
 
         /// First work detect
@@ -992,19 +1019,84 @@ class ReportController extends Controller
 //                        }
                         }
                     } else {
-//                    dd($emp,$y);
-                        //data not completed
-                        if ($gradueted == 'ปริญญาเอก') {
-                            $data[$y]['doctor'] += 1;
-                            if ($y == 2560) {
-                                $x[] = $emp->FullName;
-                            }
-                        } elseif ($gradueted == 'ปริญญาโท') {
-                            $data[$y]['master'] += 1;
+                        $x[] = $emp->FullName;
+                        $employee = Employee::query()->where('id', $emp->id)->first();
+
+                        $firstWork = (int)Carbon::createFromFormat('d/m/Y',$employee->FirstWorkDate)->format('Y');
+                        $hisPoint = EmployeeHistoryWork::query()
+                            ->where('year',$y)
+                            ->where('employee_id',$emp->id)
+                            ->first();
+
+
+
+                        if ($firstWork <= $y && !$hisPoint ){
+                            if ($employee->PositionName == 'ศาสตราจารย์') {
+                                $data[$y]['s_doctor'] += 1;
+//                    if ($y == 2563){
+//                        $x[] = $his->employee->FullName;
+//                    }
+                            } else if ($employee->PositionName == 'รองศาสตราจารย์') {
+                                $data[$y]['rs_doctor'] += 1;
+//                    if ($y == 2563){
+//                        $x[] = $emp->FullName;
+//                    }
+                            } else if ($employee->PositionName == 'ผู้ช่วยศาสตราจารย์' && $gradueted == "ปริญญาเอก") {
+                                $data[$y]['ps_doctor'] += 1;
+//                     if ($y == 2563){
+//                        $x[] = $emp->FullName;
+//                    }
+                            } else if ($employee->PositionName == 'ผู้ช่วยศาสตราจารย์' && $gradueted == 'ปริญญาโท') {
+                                $data[$y]['ps_master'] += 1;
 //                        if ($y == 2563){
 //                            $x[] = $emp->FullName;
 //                        }
+                            } else if ($gradueted == 'ปริญญาเอก') {
+                                $data[$y]['doctor'] += 1;
+                                if ($y == 2560) {
+                                    $x[] = $emp->FullName;
+                                }
+//                        if ($employee->employee_id == 25 && $y == 2562) {
+//                            dd($gradueted, $grouped);
+//                        }
+//                    if ($y == 2563){
+//                        $x[] = $his->employee->FullName;
+//                    }
+                            } elseif ($gradueted == 'ปริญญาโท') {
+                                $data[$y]['master'] += 1;
+//                        if ($y == 2563){
+//                            $x[] = $emp->FullName;
+//                        }
+//                        if ($y == 2563){
+//                            $x[] = $emp->FullName;
+//                        }
+//                    $x[] = $his->employee->PersonalID;
+                            } else {
+//                    $t[] = [
+//                        'id' => $his->employee_id,
+//                        'position' => $his->PositionName ,
+//                        'graduated' => $gradueted
+//                    ];
+//                        if ($his->PositionName == 'อาจารย์'){
+//                            dd($his,$gradueted,$y,$grouped[$y]);
+//                        }
+                            }
+//                            if ($gradueted == 'ปริญญาเอก') {
+//                                $data[$y]['doctor'] += 1;
+//                                if ($y == 2560) {
+//                                    $x[] = $emp->FullName;
+//                                }
+//                            } elseif ($gradueted == 'ปริญญาโท') {
+//                                $data[$y]['master'] += 1;
+////                        if ($y == 2563){
+////                            $x[] = $emp->FullName;
+////                        }
+//                            }
+
                         }
+
+//                    dd($emp,$y);
+                        //data not completed
                     }
                 }
 
@@ -1104,60 +1196,62 @@ class ReportController extends Controller
 
 //        dd($x);
 
-        return view('index4', [
+        return view('education_dashboard', [
             'users' => [],
             'years' => $years,
             'data' => $data
         ]);
     }
 
-    public function index5(Request $request)
+    public function employee(Request $request)
     {
-//        $agencies = Agency::query()->get();
-//
-//        $agency_id = $request->get('agency_id',null);
-//        if ($agency_id){
-//            $position_groups = Employee::query()
-//                ->with(['agency','position'])
-//                ->where('agency_id',$agency_id)
-//                ->get()
-//                ->groupBy('position');
-//        }else{
-//
-//            $position_groups = Employee::query()
-//                ->with(['agency','position'])
-//                ->get()
-//                ->groupBy('position');
-//        }
-//
-//        $users = [];
-//        $index = 1;
-//
-//        foreach ($position_groups as $key => $group) {
-//            $tmp = [
-//                'position' => $key
-//            ];
-//            $users[] = $tmp;
-//            foreach ($group as $i => $user) {
-//
-//                $tmp = [
-//                    'id' => $user->id,
-//                    'no' => $index,
-//                    'fullName' => $user->FullName,
-//                    'position' => $user->position->name,
-//                    'agency' => $user->agency->name,
-//                ];
-//
-//
-//                $users[] = $tmp;
-//                $index++;
-//            }
-//        }
 
+        $agencies = Agency::query()->get();
+
+        $agency_id = $request->get('agency_id',null);
+        if ($agency_id){
+            $position_groups = Employee::query()
+                ->with(['agency','position'])
+                ->where('agency_id',$agency_id)
+                ->get()
+                ->groupBy('position');
+        }else{
+
+            $position_groups = Employee::query()
+//                ->with(['agency','position'])
+                ->get()
+                ->groupBy('position');
+        }
 
         $users = [];
-        $agencies = [];
-        return view('index5', [
+        $index = 1;
+
+        foreach ($position_groups as $key => $group) {
+            $tmp = [
+                'position' => $key
+            ];
+            $users[] = $tmp;
+            foreach ($group as $i => $user) {
+
+                $tmp = [
+                    'id' => $user->id,
+                    'no' => $index,
+                    'fullName' => $user->FullName,
+//                    'position' => $user->position->name,
+//                    'agency' => $user->agency->name,
+                ];
+
+
+                $users[] = $tmp;
+                $index++;
+            }
+        }
+
+
+//
+//        $users = [];
+//        $agencies = [];
+        return view('employee.index', [
             'users' => $users,
             'agencies' => $agencies
         ]);
@@ -1165,14 +1259,21 @@ class ReportController extends Controller
 
     public function view($id, Request $request)
     {
-//        $user = Employee::query()
+        $user = Employee::query()
+            ->with([
+                'work_histories' => function($q){
+                    $q->orderBy('id','DESC');
+                },
+                'work_histories.history',
+                'employee_educations'=> function($q){
+                    $q->orderBy('id','DESC');
+                },
+                'employee_educations.education'])
 //            ->with(['agency','position','education'])
-//            ->where('id',$id)
-//            ->first();
+            ->where('id',$id)
+            ->first();
 
-        $user = [];
-
-        return view('view', [
+        return view('employee.view', [
             'user' => $user
         ]);
     }

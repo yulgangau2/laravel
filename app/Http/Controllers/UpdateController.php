@@ -205,7 +205,7 @@ class UpdateController extends Controller
     }
     public function update_employee(Request $request)
     {
-        ini_set('max_execution_time', '1200');
+        ini_set('max_execution_time', 1200);
 
         $orgId = '0000000021';
         $api = new ApiController();
